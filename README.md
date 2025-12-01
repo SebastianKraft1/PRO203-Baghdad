@@ -24,6 +24,15 @@ npm install
 ## Branching strategi
 Vi skal holde main-branchen så ren som mulig. Alle endringer, feuatures, fixes skal gjøres i egne brancher. 
 
+Kategorier for brancher
+feature/
+	•	Ny funksjonalitet eller komponenter i appen.
+	•	Eksempel: feature/login-form, feature/user-profile.
+
+fix/ eller bugfix/
+	•	Små feilrettinger eller korrigeringer.
+	•	Eksempel: fix/button-color, bugfix/missing-data.
+
 1. Lag egen feature-branch for din oppgave eller komponent
 ```bash
 git checkout -b feature/<beskrivende-navn>
