@@ -1,50 +1,79 @@
-# Welcome to your Expo app 👋
+# PRO203-Baghdad
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Repo for eksamen i PRO203, inneholder frontend koden til eksamensprosjektet vårt.
 
-## Get started
+Anbefaler alle å prøve å bruke `git` da dette er industristandard for versjonshåndtering, og noe dere <b>GARANTERT</b> kommer til å måtte bruke senere på studiet, og karriæren.
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Som alltid, husk å kjøre
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Etter at dere har forket, klonet eller pullet.
 
-## Learn more
+## Kom i gang
 
-To learn more about developing your project with Expo, look at the following resources:
+Klon repoet ti let passende sted på maskinen din
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+git clone https://github.com/SebastianKraft1/PG203-Baghdad.git
+cd PG203-Baghdad
+```
 
-## Join the community
+## Installer nødvemdige avhengigheter etter dere har klonet eller pullet
 
-Join our community of developers creating universal apps.
+```bash
+npm install
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Branching strategi
+
+Vi skal holde main-branchen så ren som mulig. Alle endringer, feuatures, fixes skal gjøres i egne brancher.
+
+1. Lag egen feature-branch for din oppgave eller komponent
+
+```bash
+git checkout -b feature/<beskrivende-navn>
+```
+
+2. Jobb lokalt, legg tl endringer og commit med beskrivende melding.
+
+```bash
+git add .
+git commit -m "Kort beskrivelse av endringen"
+```
+
+3. Push branchen til repoet
+
+```bash
+git push origin feature/<beskrivende-navn>
+```
+
+4. Når du er ferdig med oppgaven -> lag en PR (Pull request) inne på github. Dne må godkjennes før den merges
+
+## Kategorier for brancher
+
+1. feature/
+   • Ny funksjonalitet eller komponenter i appen.
+   • Eksempel: feature/login-form, feature/user-profile.
+
+2. fix/ eller bugfix/
+   • Små feilrettinger eller korrigeringer.
+   • Eksempel: fix/button-color, bugfix/missing-data.
+
+## Oppdatere branchen med ny kode fra main
+
+Når repoet oppdateres med nye commits:
+git checkout main
+git pull origin main
+git checkout feature/<din branch>
+git rebase main
+
+Dette holder din branch oppdatert og reduserer merge-konflikter.
+
+## Tips
+
+- ALDRI push direkte eller jobb direkte på main.
+- Hold commits små og beskrivende
+- Pull ofte slik at vi unngår konlikter. Når du er ferdig med en oppgave -> synkroniser med Main før du lager PR + Test før du lager PR
