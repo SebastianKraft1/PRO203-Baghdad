@@ -65,10 +65,13 @@ git push origin feature/<beskrivende-navn>
 ## Oppdatere branchen med ny kode fra main
 
 Når repoet oppdateres med nye commits:
+
+```bash
 git checkout main
 git pull origin main
 git checkout feature/<din branch>
 git rebase main
+```
 
 Dette holder din branch oppdatert og reduserer merge-konflikter.
 
