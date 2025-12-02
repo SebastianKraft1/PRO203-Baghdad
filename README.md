@@ -14,7 +14,7 @@ Etter at dere har forket, klonet eller pullet.
 
 ## Kom i gang
 
-Klon repoet ti let passende sted på maskinen din
+Klon repoet til et passende sted på maskinen din
 
 ```bash
 git clone https://github.com/SebastianKraft1/PG203-Baghdad.git
