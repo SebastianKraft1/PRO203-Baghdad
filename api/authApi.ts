@@ -1,9 +1,17 @@
 import { auth } from "@/firebaseConfig";
 import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    updateProfile,
-    User,
+  GoogleSignin,
+  isSuccessResponse,
+} from "@react-native-google-signin/google-signin";
+import * as AppleAuthentication from "expo-apple-authentication";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+  updateProfile,
+  User,
 } from "firebase/auth";
 
 export async function signIn(email: string, password: string) {
@@ -41,5 +49,50 @@ export async function setUserDisplayName(user: User, displayName: string) {
     });
   } catch (error) {
     console.error("Oops! kunne ikke oppdatere display name", error);
+  }
+}
+
+export async function signInWithGoogle() {
+  try {
+    await GoogleSignin.hasPlayServices();
+    const response = await GoogleSignin.signIn();
+    if (isSuccessResponse(response)) {
+      const user = GoogleSignin.getCurrentUser();
+      if (user) {
+        const googleCredential = GoogleAuthProvider.credential(user.idToken);
+        const userCredential = await signInWithCredential(
+          auth,
+          googleCredential
+        );
+      }
+    }
+  } catch (e) {
+    console.error("Error signing in with google", e);
+  }
+}
+
+export async function signInWithApple() {
+  try {
+    const appleCredential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+
+    if (!appleCredential.identityToken) {
+      console.error("No identity token returned");
+      return;
+    }
+    
+    const provider = new OAuthProvider("apple.com");
+    const credential = provider.credential({
+      idToken: appleCredential.identityToken,
+    });
+
+    const userCredential = await signInWithCredential(auth, credential);
+    console.log("Apple sign-in successful", userCredential);
+  } catch (e) {
+    console.log("Error signing in with apple", e);
   }
 }

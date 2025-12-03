@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { initializeApp } from "firebase/app";
 import { getReactNativePersistence, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -16,6 +17,10 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+
+GoogleSignin.configure({
+    webClientId: "296416169454-m717j6813rcho1lc8scn094fm8kep8d4.apps.googleusercontent.com",
 });
 
 export const db = getFirestore(app);
