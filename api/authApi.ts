@@ -6,13 +6,16 @@ import {
 import * as AppleAuthentication from "expo-apple-authentication";
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   GoogleAuthProvider,
   OAuthProvider,
   signInWithCredential,
   signInWithEmailAndPassword,
+  updatePassword,
   updateProfile,
-  User,
+  User
 } from "firebase/auth";
+import { Alert } from "react-native";
 
 export async function signIn(email: string, password: string) {
   await signInWithEmailAndPassword(auth, email, password)
@@ -94,5 +97,48 @@ export async function signInWithApple() {
     console.log("Apple sign-in successful", userCredential);
   } catch (e) {
     console.log("Error signing in with apple", e);
+  }
+}
+
+export async function deleteAccount() {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    console.warn("No user is currently signed in.");
+    return;
+  }
+
+  try {
+    await deleteUser(currentUser);
+    console.log("User account deleted successfully.");
+    Alert.alert("Konto slettet", "Din konto har blitt slettet.");
+  } catch (error: any) {
+    console.error("Error deleting user account:", error);
+
+    if (error?.code === 'auth/requires-recent-login') {
+      Alert.alert(
+        "Handling krever ny pålogging",
+        "For å slette kontoen din, vennligst logg inn på nytt og prøv igjen."
+      );
+    } else {
+      Alert.alert(
+        "Feil",
+        "Kunne ikke slette kontoen. Vennligst prøv igjen senere."
+      );
+    }
+  }
+}
+
+export async function changePassword(newPassword: string) {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    console.warn("No user is currently signed in.");
+    return;
+  }
+  
+  try {
+    await updatePassword(currentUser, newPassword);
+    console.log("Password updated successfully.");
+  } catch (error) {
+    console.error("Error updating password:", error);
   }
 }
