@@ -1,4 +1,5 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from '@expo/vector-icons/Feather';
 import { Tabs } from "expo-router";
 
 export default function TabBar() {
@@ -25,6 +26,17 @@ export default function TabBar() {
           tabBarIcon: ({ color }) => (
             // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
             <AntDesign name="user" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Innstillinger",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
+            <Feather name="settings" size={24} color={color}  />
           ),
         }}
       />
