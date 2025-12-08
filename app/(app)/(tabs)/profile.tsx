@@ -1,25 +1,11 @@
-import { uploadImageToFirebase } from "@/api/imageApi";
-import {
-  getUserProfile,
-  updateRegisteredChildren,
-  updateUserProfileImage,
-} from "@/api/userApi";
-import SelectImageModal from "@/components/SelectImageModal";
+import { getUserProfile, updateRegisteredChildren } from "@/api/userApi";
 import { auth } from "@/firebaseConfig";
 import { UserData } from "@/types/user";
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const userId = auth.currentUser?.uid;
 
   // Hent brukerdata
@@ -33,19 +19,6 @@ export default function ProfilePage() {
 
     fetchUser();
   }, [userId]);
-
-  // Håndter nytt bilde fra modal
-  const handleNewImage = async (uri: string) => {
-    if (!userId) return;
-
-    const uploadResult = await uploadImageToFirebase(uri);
-    if (uploadResult) {
-      await updateUserProfileImage(userId, uploadResult.url, uploadResult.path);
-      setUser((prev) =>
-        prev ? { ...prev, profileImage: uploadResult.url } : prev
-      );
-    }
-  };
 
   // Legg til et registrert barn
   const handleAddChild = async () => {
@@ -61,16 +34,14 @@ export default function ProfilePage() {
   return (
     <View style={styles.container}>
       {/* Profilbilde */}
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Image
-          source={
-            user.profileImage
-              ? { uri: user.profileImage }
-              : require("../../../assets/images/placeholder-profile.png")
-          }
-          style={styles.profileImage}
-        />
-      </TouchableOpacity>
+      <Image
+        source={
+          user.profileImage
+            ? { uri: user.profileImage }
+            : require("../../../assets/images/placeholder-profile.png")
+        }
+        style={styles.profileImage}
+      />
 
       {/* Navn og rolle */}
       <Text style={styles.name}>{user.name}</Text>
@@ -83,14 +54,6 @@ export default function ProfilePage() {
         </Text>
         <Button title="Registrer +" onPress={handleAddChild} />
       </View>
-
-      {/* Modal for bildevalg */}
-      {modalVisible && (
-        <SelectImageModal
-          closeModal={() => setModalVisible(false)}
-          setImage={handleNewImage}
-        />
-      )}
     </View>
   );
 }
