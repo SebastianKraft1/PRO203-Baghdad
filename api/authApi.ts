@@ -15,6 +15,7 @@ import {
   updateProfile,
   User
 } from "firebase/auth";
+import { createUserProfile } from "./userApi";
 import { Alert } from "react-native";
 
 export async function signIn(email: string, password: string) {
@@ -29,7 +30,11 @@ export async function signOut() {
   await auth.signOut();
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(
+  email: string,
+  password: string,
+  userName?: string
+) {
   console.log("Epost", email);
   console.log("password", password);
   try {
@@ -38,7 +43,26 @@ export async function createUser(email: string, password: string) {
       email,
       password
     );
-    return userCredentials.user;
+
+    const user = userCredentials.user;
+    if (userName) {
+      await updateProfile(user, {
+        displayName: userName,
+      });
+    }
+
+    await createUserProfile(user.uid, {
+      id: user.uid,
+      name: userName || email.split("@")[0],
+      email: email,
+      bio: "",
+      profileImagePath: "",
+      role: "Foresatt",
+      registeredChildren: 0,
+    });
+
+    console.log("Bruker og profil opprettet i både Auth og Firestore!");
+    return user;
   } catch (error) {
     console.error("Oops! kunne ikke opprette bruker", error);
     return null;
@@ -87,7 +111,7 @@ export async function signInWithApple() {
       console.error("No identity token returned");
       return;
     }
-    
+
     const provider = new OAuthProvider("apple.com");
     const credential = provider.credential({
       idToken: appleCredential.identityToken,
