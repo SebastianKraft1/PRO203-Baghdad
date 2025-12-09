@@ -1,11 +1,14 @@
-import { getUserProfile, updateRegisteredChildren } from "@/api/userApi";
+import { uploadImageToFirebase } from "@/api/imageApi";
+import { getUserProfile, updateRegisteredChildren, updateUserProfileImage } from "@/api/userApi";
+import SelectImageModal from "@/components/SelectImageModal";
 import { auth } from "@/firebaseConfig";
 import { UserData } from "@/types/user";
 import React, { useEffect, useState } from "react";
-import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { Button, Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const userId = auth.currentUser?.uid;
 
   // Hent brukerdata
@@ -29,19 +32,42 @@ export default function ProfilePage() {
     setUser({ ...user, registeredChildren: newCount });
   };
 
+  // Håndter bildevalg fra modal
+  const handleImageSelected = async (imageUri: string) => {
+    if (!userId || !user) return;
+
+    const uploadedImage = await uploadImageToFirebase(imageUri);
+    if (!uploadedImage) {
+        console.error("Error while uploading image");
+        return;
+    }
+
+    const { url: downloadUrl, path: imagePath } = uploadedImage;
+    await updateUserProfileImage(userId, downloadUrl, imagePath);
+
+    setUser({ 
+        ...user, 
+        profileImage: downloadUrl,
+        profileImagePath: imagePath,
+    });
+  };
+
   if (!user) return <Text style={styles.loadingText}>Loading...</Text>;
 
   return (
     <View style={styles.container}>
       {/* Profilbilde */}
-      <Image
-        source={
-          user.profileImage
-            ? { uri: user.profileImage }
-            : require("../../../assets/images/placeholder-profile.png")
-        }
-        style={styles.profileImage}
-      />
+      <Pressable onPress={() => setIsModalVisible(true)} style={{alignItems: "center"}}>
+        <Image
+            source={
+            user.profileImage
+                ? { uri: user.profileImage }
+                : require("../../../assets/images/placeholder-profile.png")
+            }
+            style={styles.profileImage}
+        />
+        <Text style={styles.editImgText}>Rediger bilde</Text>
+      </Pressable>
 
       {/* Navn og rolle */}
       <Text style={styles.name}>{user.name}</Text>
@@ -54,6 +80,14 @@ export default function ProfilePage() {
         </Text>
         <Button title="Registrer +" onPress={handleAddChild} />
       </View>
+
+        {/* Modal for å velge bilde */}
+        <Modal visible={isModalVisible} animationType="slide">
+            <SelectImageModal 
+                closeModal={() => setIsModalVisible(false)}
+                setImage={handleImageSelected}
+            />
+        </Modal>
     </View>
   );
 }
@@ -74,7 +108,12 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     backgroundColor: "#ccc",
-    marginBottom: 16,
+    marginBottom: 8,
+  },
+  editImgText: {
+    fontSize: 14,
+    color: "#4b5563",
+    marginBottom: 12,
   },
   name: {
     fontSize: 22,

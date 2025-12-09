@@ -60,7 +60,7 @@ export default function SelectImageModal({
           <Text style={styles.text}>Avbryt</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => captureImage()}>
-          <Text style={styles.text}>Snap!</Text>
+          <Text style={styles.text}>Ta bilde</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => pickImage()}>
           <Text style={styles.text}>Velg...</Text>
