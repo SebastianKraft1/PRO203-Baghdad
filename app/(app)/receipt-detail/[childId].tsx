@@ -91,7 +91,6 @@ export default function ReceiptDetailPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 80,
     padding: 24,
     backgroundColor: "#fff",
   },
