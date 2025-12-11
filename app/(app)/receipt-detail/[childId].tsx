@@ -3,32 +3,32 @@ import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 type ChildWithTimes = Child & {
   checkInTime?: string;
   checkOutTime?: string;
 };
 
+//Henting av childId fra url /receipt-detail/[childId]
 export default function ReceiptDetailPage() {
   const { childId } = useLocalSearchParams<{ childId: string }>();
-  const userId = auth.currentUser?.uid;
+  const userId = auth.currentUser?.uid; //Henter id til innlogget bruker
 
   const [child, setChild] = useState<ChildWithTimes | null>(null);
-  const [loading, setLoading] = useState(true);
 
+  //Henter/lytter på endringer i barnedata
   useEffect(() => {
     if (!userId || !childId) return;
-
     const unsubscribe = listenToChildren(userId, (children: any[]) => {
       const foundChild = children.find((child) => child.id === childId);
       setChild(foundChild ?? null);
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, [userId, childId]);
 
+  //Funksjoner for å formatere tidspunktene til lettere lesbar tekst
   const formatTime = (isoString?: string) => {
     if (!isoString) return "Ikke registrert";
 
@@ -44,84 +44,172 @@ export default function ReceiptDetailPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text>Laster kvittering...</Text>
-      </View>
-    );
-  }
-
-  if (!child) {
-    return (
-      <View style={styles.center}>
-        <Text>Fant ikke barnet.</Text>
-      </View>
-    );
-  }
-
+ if (!child) { // Sjekk om barnet lastes inn og viser skjerm imens
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: "Kvittering" }} />
+      <Text style={styles.pageTitle}>Laster data...</Text>
+    </View>
+  );
+}
 
-      <Text style={styles.title}>Kvittering for inn-/ut-sjekk</Text>
+  const isCheckedIn = child.status?.toLowerCase().includes("inn"); //Sjekker om status innehoder "inn" for å skifte farge
 
+  //Hoved rendring av siden
+  return (
+    <View style={styles.container}>
+      <Stack.Screen options={{ title: "Kvittering" }} />
+      <Text style={styles.pageTitle}>Kvittering</Text>
       <View style={styles.card}>
-        <Text style={styles.label}>Barn</Text>
-        <Text style={styles.value}>{child.name}</Text>
+        <View style={styles.childHeader}>
+          <Text style={styles.childName}>{child.name}</Text>
+          {!!child.department && (
+            <Text style={styles.childDepartment}>{child.department}</Text>
+          )}
+        </View>
 
-        <Text style={styles.label}>Status nå</Text>
-        <Text style={styles.value}>{child.status}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Status nå:</Text>
+          <View style={styles.statusRow}>
+            <View
+              style={[
+                styles.statusPill,
+                isCheckedIn ? styles.statusIn : styles.statusOut,
+              ]}
+            >
+              <Text style={styles.statusText}>{child.status}</Text>
+            </View>
+          </View>
+        </View>
 
-        <Text style={styles.label}>Siste innsjekk</Text>
-        <Text style={styles.value}>{formatTime(child.checkInTime)}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Tidspunkt</Text>
 
-        <Text style={styles.label}>Siste utsjekk</Text>
-        <Text style={styles.value}>{formatTime(child.checkOutTime)}</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Siste innsjekk</Text>
+            <Text style={styles.value}>{formatTime(child.checkInTime)}</Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.label}>Siste utsjekk</Text>
+            <Text style={styles.value}>{formatTime(child.checkOutTime)}</Text>
+          </View>
+        </View>
       </View>
-
-      <Text style={styles.footer}>
-        Denne kvitteringen viser siste registrerte inn-/ut-sjekking for barnet.
+       
+       <Text style={styles.pageSubtitle}>
+        Bekreftelse på nyeste inn-/ut-sjekk i barnehagen
       </Text>
     </View>
   );
 }
 
+//CSS for styling av kvitteringssiden
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: "#fff",
+    backgroundColor: "#F5F3FF",
   },
   center: {
     flex: 1,
+    backgroundColor: "#F5F3FF",
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 24,
   },
-  title: {
-    fontSize: 22,
+  loadingText: {
+    marginTop: 8,
+    fontSize: 16,
+    color: "#4B5563",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#B91C1C",
+  },
+  pageTitle: {
+    fontSize: 24,
     fontWeight: "700",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  pageSubtitle: {
+    fontSize: 14,
+    marginTop: 16,
+    color: "#6B7280",
     marginBottom: 24,
+    textAlign: "center",
   },
   card: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: "#EDE6FF",
-    gap: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  childHeader: {
+    marginBottom: 12,
+  },
+  childName: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111827",
+  },
+  childDepartment: {
+    fontSize: 14,
+    color: "#6B21A8",
+    marginTop: 2,
+  },
+  section: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#4B5563",
+    marginBottom: 8,
+  },
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  statusPill: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+  },
+  statusIn: {
+    backgroundColor: "#DCFCE7",
+  },
+  statusOut: {
+    backgroundColor: "#FEE2E2",
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#111827",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
   },
   label: {
     fontSize: 14,
     color: "#6B7280",
   },
   value: {
-    fontSize: 16,
+    fontSize: 14,
+    color: "#111827",
     fontWeight: "500",
-    marginBottom: 8,
-  },
-  footer: {
-    marginTop: 16,
-    fontSize: 12,
-    color: "#6B7280",
+    marginLeft: 12,
+    textAlign: "right",
+    flexShrink: 1,
   },
 });
