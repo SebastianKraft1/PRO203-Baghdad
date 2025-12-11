@@ -7,4 +7,9 @@ export interface Child {
   allergies?: string;
   department?: string;
   createdAt: number;
+
+  checkInTime?: string;
+  checkOutTime?: string; 
+  checkInHistory?: string[];
+  checkOutHistory?: string[];
 }
