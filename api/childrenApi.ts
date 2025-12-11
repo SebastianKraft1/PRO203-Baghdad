@@ -4,6 +4,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   updateDoc,
@@ -67,10 +68,20 @@ export async function deleteChild(userId: string, childId: string) {
 
 export async function checkInChild(userId: string, childId: string) {
   try {
+    const now = new Date().toISOString();
+
+    const ref = doc(db, "users", userId, "children", childId);
+    const snapshot = await getDoc(ref);
+    if(!snapshot.exists()) return;
+
+    const data = snapshot.data();
+    const updatedHistory = [...(data.checkInHistory ?? []), now];
+
     await updateChild(userId, childId, {
       isCheckedIn: true,
       status: "Innsjekket",
-      checkInTime: new Date().toISOString(),
+      checkInTime: now,
+      checkInHistory: updatedHistory,
     });
     console.log("Child checked in:", childId);
   } catch (e) {
@@ -80,10 +91,20 @@ export async function checkInChild(userId: string, childId: string) {
 
 export async function checkOutChild(userId: string, childId: string) {
   try {
+    const now = new Date().toISOString();
+
+    const ref = doc(db, "users", userId, "children", childId);
+    const snapshot = await getDoc(ref);
+    if(!snapshot.exists()) return;
+
+    const data = snapshot.data();
+    const updatedHistory = [...(data.checkInHistory ?? []), now];
+
     await updateChild(userId, childId, {
       isCheckedIn: false,
       status: "Hentet",
       checkOutTime: new Date().toISOString(),
+      checkOutHistory: updatedHistory,
     });
     console.log("Child checked out:", childId);
   } catch (e) {
