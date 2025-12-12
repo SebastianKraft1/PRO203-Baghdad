@@ -1,83 +1,57 @@
 import {
-    checkInChild,
-    checkOutChild,
-    listenToChildren,
+  checkInChild,
+  checkOutChild,
+  listenToChildren,
 } from "@/api/childrenApi";
 import { uploadImageToFirebase } from "@/api/imageApi";
 import { getUserProfile, updateUserProfileImage } from "@/api/userApi";
-import RegisterChildModal from "@/components/RegisterChildModal"; // <-- Importer her
+import RegisterChildModal from "@/components/RegisterChildModal";
 import SelectImageModal from "@/components/SelectImageModal";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { UserData } from "@/types/user";
-import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-    Button,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [children, setChildren] = useState<Child[]>([]);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
-  const [isChildModalVisible, setIsChildModalVisible] = useState(false); // <-- Ny state
+  const [isChildModalVisible, setIsChildModalVisible] = useState(false);
   const userId = auth.currentUser?.uid;
 
-  // Hent brukerdata
   useEffect(() => {
     if (!userId) return;
-
-    const fetchUser = async () => {
-      const data = await getUserProfile(userId);
-      if (data) setUser(data);
-    };
-
-    fetchUser();
-  }, [userId]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const unsubscribe = listenToChildren(userId, (childrenData: any[]) => {
-      setChildren(childrenData);
-      setUser((prev) =>
-        prev ? { ...prev, registeredChildren: childrenData.length } : prev
-      );
-    });
-
-    return () => unsubscribe();
-  }, [userId]);
-
-  // Callback når et barn er lagt til
-  const handleChildAdded = () => {
-    // Refresh brukerdata for å få oppdatert children count
-    if (!userId) return;
-
     getUserProfile(userId).then((data) => {
       if (data) setUser(data);
     });
-  };
+  }, [userId]);
 
-  // Håndter bildevalg fra modal
+  useEffect(() => {
+    if (!userId) return;
+    const unsubscribe = listenToChildren(userId, (childrenData: any[]) => {
+      setChildren(childrenData);
+    });
+    return () => unsubscribe();
+  }, [userId]);
+
   const handleImageSelected = async (imageUri: string) => {
     if (!userId || !user) return;
-
     const uploadedImage = await uploadImageToFirebase(imageUri);
-    if (!uploadedImage) {
-      console.error("Error while uploading image");
-      return;
-    }
+    if (!uploadedImage) return;
 
     const { url: downloadUrl, path: imagePath } = uploadedImage;
     await updateUserProfileImage(userId, downloadUrl, imagePath);
-
     setUser({
       ...user,
       profileImage: downloadUrl,
@@ -85,86 +59,122 @@ export default function ProfilePage() {
     });
   };
 
-  if (!user) return <Text style={styles.loadingText}>Loading...</Text>;
+  const checkedInCount = children.filter((c) => c.isCheckedIn).length;
+
+  if (!user) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Laster...</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1 }}>
-    <ScrollView 
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.container}>
-      <Pressable
-        onPress={() => setIsImageModalVisible(true)}
-        style={{ alignItems: "center" }}
+    <View style={{ flex: 1, backgroundColor: "#F8F9FA" }}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
       >
-        <Image
-          source={
-            user.profileImage
-              ? { uri: user.profileImage }
-              : require("../../../assets/images/placeholder-profile.png")
-          }
-          style={styles.profileImage}
-        />
-        <Text style={styles.editImgText}>Rediger bilde</Text>
-      </Pressable>
+        {/* Header med profilbilde */}
+        <View style={styles.header}>
+          <Pressable
+            onPress={() => setIsImageModalVisible(true)}
+            style={styles.profileImageContainer}
+          >
+            <Image
+              source={
+                user.profileImage
+                  ? { uri: user.profileImage }
+                  : require("../../../assets/images/placeholder-profile.png")
+              }
+              style={styles.profileImage}
+            />
+            <View style={styles.cameraIcon}>
+              <Ionicons name="camera" size={18} color="#fff" />
+            </View>
+          </Pressable>
 
-      <Text style={styles.name}>{user.name}</Text>
-      <Text style={styles.role}>{user.role}</Text>
-
-      <View style={styles.childrenSection}>
-        <View style={styles.childrenHeader}>
-          <Text style={styles.sectionTitle}>Registrerte barn</Text>
-          <Button
-            title="Registrer barn +"
-            onPress={() => setIsChildModalVisible(true)}
-          />
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.role}>{user.role}</Text>
         </View>
 
-       {children.map((child) => (
-        <View key={child.id} style={{ marginBottom: 12 }}>
-          <View style={styles.childCard}>
-            <View style={styles.childInfo}>
-              <Text style={styles.childName}>{child.name}</Text>
-              <Text>Alder: {child.age}</Text>
-              <Text>Avdeling: {child.department}</Text>
-            {child.allergies && <Text>Allergier: {child.allergies}</Text>}
-          <Text
-            style={[
-              styles.childStatus,
-              child.isCheckedIn ? styles.checkedIn : styles.checkedOut,
-            ]}
-           >
-          {child.status}
-          </Text>
+        {/* Stats */}
+        <View style={styles.statsContainer}>
+          <View style={[styles.statCard, styles.activeCard]}>
+            <Text style={styles.statNumber}>{checkedInCount}</Text>
+            <Text style={styles.statLabel}>Innsjekket</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumberGray}>
+              {children.length - checkedInCount}
+            </Text>
+            <Text style={styles.statLabelGray}>Hjemme</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumberGray}>{children.length}</Text>
+            <Text style={styles.statLabelGray}>Totalt</Text>
+          </View>
         </View>
 
-        <Button
-          title={child.isCheckedIn ? "Sjekk ut" : "Sjekk inn"}
-          onPress={() => {
-            if (child.isCheckedIn) {
-              checkOutChild(userId!, child.id);
-            } else {
-              checkInChild(userId!, child.id);
-            }
-          }}
-        />
-      </View>
-      <View style={styles.receiptWrapper}>
-        <Button
-          title="Kvittering"
-          onPress={() =>
-            router.navigate({
-              pathname: "/receipt-detail/[childId]",
-              params: { childId: String(child.id) },
-            })
-          }
-        />
-      </View>
-    </View>
-  ))}
+        {/* Mine barn */}
+        <View style={styles.childrenSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Mine barn</Text>
+            <TouchableOpacity onPress={() => setIsChildModalVisible(true)}>
+              <Ionicons name="add-circle" size={28} color="#A569BD" />
+            </TouchableOpacity>
+          </View>
 
-      </View>
+          {children.map((child) => (
+            <View key={child.id} style={styles.childCard}>
+              <View style={styles.childInfo}>
+                <View style={styles.childAvatar}>
+                  <Text style={styles.avatarText}>
+                    {child.name.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.childDetails}>
+                  <Text style={styles.childName}>{child.name}</Text>
+                  <Text style={styles.childMeta}>
+                    {child.age} år • {child.department}
+                  </Text>
+                  {child.allergies && (
+                    <View style={styles.allergyBadge}>
+                      <Ionicons name="alert-circle" size={12} color="#E74C3C" />
+                      <Text style={styles.allergyText}>{child.allergies}</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
 
-      {/* Modal for å velge bilde */}
+              <TouchableOpacity
+                style={[
+                  styles.checkButton,
+                  child.isCheckedIn ? styles.checkOut : styles.checkIn,
+                ]}
+                onPress={() =>
+                  child.isCheckedIn
+                    ? checkOutChild(userId!, child.id)
+                    : checkInChild(userId!, child.id)
+                }
+              >
+                <Ionicons
+                  name={
+                    child.isCheckedIn ? "log-out-outline" : "log-in-outline"
+                  }
+                  size={18}
+                  color="#fff"
+                />
+                <Text style={styles.buttonText}>
+                  {child.isCheckedIn ? "Sjekk ut" : "Sjekk inn"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* Modals */}
       <Modal visible={isImageModalVisible} animationType="slide">
         <SelectImageModal
           closeModal={() => setIsImageModalVisible(false)}
@@ -172,108 +182,206 @@ export default function ProfilePage() {
         />
       </Modal>
 
-      {/* Modal for å registrere barn */}
       {userId && (
         <RegisterChildModal
           isVisible={isChildModalVisible}
           setIsVisible={setIsChildModalVisible}
           userId={userId}
-          confirmChildAdded={handleChildAdded}
+          confirmChildAdded={() => {}}
         />
       )}
-    </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-     paddingTop: 50,
+    paddingTop: 60,
     paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F8F9FA",
   },
   loadingText: {
-    textAlign: "center",
-    marginTop: 50,
-    fontSize: 18,
+    fontSize: 16,
+    color: "#666",
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  profileImageContainer: {
+    position: "relative",
+    marginBottom: 16,
   },
   profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#ccc",
-    marginBottom: 8,
+    backgroundColor: "#E0E0E0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  editImgText: {
-    fontSize: 14,
-    color: "#4b5563",
-    marginBottom: 12,
+  cameraIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#A569BD",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#F8F9FA",
   },
   name: {
-    fontSize: 22,
-    fontWeight: "600",
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    marginBottom: 4,
   },
   role: {
     fontSize: 16,
     color: "#666",
-    marginBottom: 24,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 32,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 18,
+    borderRadius: 16,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  activeCard: {
+    backgroundColor: "#A569BD",
+  },
+  statNumber: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  statNumberGray: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#fff",
+    marginTop: 4,
+  },
+  statLabelGray: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
   },
   childrenSection: {
-    width: "90%",
-    backgroundColor: "#EDE6FF",
-    padding: 16,
-    borderRadius: 12,
-    marginVertical: 16,
+    marginBottom: 20,
   },
-  childrenHeader: {
+  sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#5B2C6F",
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1A1A1A",
   },
   childCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-    marginVertical: 6,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
     elevation: 2,
   },
   childInfo: {
-    flex: 1,
+    flexDirection: "row",
+    marginBottom: 12,
+  },
+  childAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#E8D5F2",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
+  },
+  avatarText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#A569BD",
+  },
+  childDetails: {
+    flex: 1,
+    justifyContent: "center",
   },
   childName: {
     fontSize: 18,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    marginBottom: 4,
+  },
+  childMeta: {
+    fontSize: 14,
+    color: "#666",
+  },
+  allergyBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFE8E8",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+    marginTop: 6,
+  },
+  allergyText: {
+    fontSize: 11,
+    color: "#E74C3C",
+    marginLeft: 4,
+    fontWeight: "500",
+  },
+  checkButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 6,
+  },
+  checkIn: {
+    backgroundColor: "#4CAF50",
+  },
+  checkOut: {
+    backgroundColor: "#FF9800",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 15,
     fontWeight: "600",
   },
-  childStatus: {
-    marginTop: 4,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 6,
-    color: "#fff",
-    fontWeight: "500",
-    alignSelf: "flex-start",
-  },
-  checkedIn: {
-    backgroundColor: "#A569BD",
-  },
-  checkedOut: {
-    backgroundColor: "#A569BD",
-  },
-  receiptWrapper: {
-  marginTop: 4,
-  alignSelf: "flex-start",
-},
 });
