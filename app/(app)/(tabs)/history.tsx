@@ -1,6 +1,8 @@
 import { listenToChildren } from '@/api/childrenApi';
 import { auth } from '@/firebaseConfig';
 import { Child } from '@/types/child';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,8 +13,7 @@ type HistoryLog = {
   time: Date;
 };
 
-// Endre navn til HistoryPage
-export default function ActivityPage() {
+export default function HistoryPage() {
   const [activities, setActivities] = useState<HistoryLog[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
   const userId = auth.currentUser?.uid;
@@ -41,7 +42,6 @@ export default function ActivityPage() {
           });
         }
 
-        // Alle utsjekk
         if(child.checkOutHistory && child.checkOutHistory.length > 0) {
           child.checkOutHistory.forEach((checkOutTime) => {
             logs.push({
@@ -75,26 +75,37 @@ export default function ActivityPage() {
       <ScrollView contentContainerStyle={styles.activityList}>
         {visibleActivities.map((item, index) => (
           <View key={index} style={styles.activityItem}>
-            <View style={styles.dateRow}>
-              <Text style={styles.date}>
-                {item.time.toLocaleDateString("nb-NO", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "2-digit",
-                })}
-              </Text>
-              <Text style={styles.time}>
-                {item.time.toLocaleTimeString("nb-NO", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
+            <View style={styles.itemRow}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.dateRow}>
+                  <Text style={styles.date}>
+                    {item.time.toLocaleDateString("nb-NO", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
+                  </Text>
+                  <Text style={styles.time}>
+                    {item.time.toLocaleTimeString("nb-NO", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+                <Text style={styles.activityText}>
+                    {item.type === "Innsjekket"
+                      ? `${item.name} ble sjekket inn.`
+                      : `${item.name} ble hentet.`}
+                </Text>
+              </View>
+              <View style={styles.iconContainer}>
+                {item.type === "Innsjekket" ? (
+                  <FontAwesome6 name="house-circle-check" size={26} color="#5019cfa0" />
+                ) : (
+                  <FontAwesome5 name="car-side" size={26} color="#5019cfa0" />
+                )}
+              </View>
             </View>
-            <Text style={styles.activityText}>
-                {item.type === "Innsjekket"
-                  ? `${item.name} ble sjekket inn.`
-                  : `${item.name} ble hentet.`}
-            </Text>
             <View style={styles.divider} />
           </View>
         ))}
@@ -139,6 +150,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
   },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   dateRow: {
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -163,6 +178,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: 8,
   },
   divider: {
     height: 1,
