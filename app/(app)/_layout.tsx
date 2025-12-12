@@ -29,6 +29,7 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen name="+not-found" />
+      <Stack.Screen name="calendar" options={{ title: "Kalender", headerShown: false }} />
     </Stack>
   );
 }

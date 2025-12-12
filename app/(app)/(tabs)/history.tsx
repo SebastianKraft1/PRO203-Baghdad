@@ -1,16 +1,19 @@
-import { listenToChildren } from '@/api/childrenApi';
-import { auth } from '@/firebaseConfig';
-import { Child } from '@/types/child';
-import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { listenToChildren } from "@/api/childrenApi";
+import { auth } from "@/firebaseConfig";
+import { Child } from "@/types/child";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+// Fiks type til types mappen
 type HistoryLog = {
   type: string;
   name: string;
   time: Date;
 };
 
-export default function ActivityPage() {
+export default function HistoryPage() {
   const [activities, setActivities] = useState<HistoryLog[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
   const userId = auth.currentUser?.uid;
@@ -23,7 +26,7 @@ export default function ActivityPage() {
 
       children.forEach((child) => {
         // Alle innsjekk
-        if(child.checkInHistory && child.checkInHistory.length > 0) {
+        if (child.checkInHistory && child.checkInHistory.length > 0) {
           child.checkInHistory.forEach((checkInTime) => {
             logs.push({
               type: "Innsjekket",
@@ -31,7 +34,7 @@ export default function ActivityPage() {
               time: new Date(checkInTime),
             });
           });
-        } else if(child.checkInTime) {
+        } else if (child.checkInTime) {
           logs.push({
             type: "Innsjekket",
             name: child.name,
@@ -39,8 +42,7 @@ export default function ActivityPage() {
           });
         }
 
-        // Alle utsjekk
-        if(child.checkOutHistory && child.checkOutHistory.length > 0) {
+        if (child.checkOutHistory && child.checkOutHistory.length > 0) {
           child.checkOutHistory.forEach((checkOutTime) => {
             logs.push({
               type: "Hentet",
@@ -48,7 +50,7 @@ export default function ActivityPage() {
               time: new Date(checkOutTime),
             });
           });
-        } else if(child.checkOutTime) {
+        } else if (child.checkOutTime) {
           logs.push({
             type: "Hentet",
             name: child.name,
@@ -57,7 +59,7 @@ export default function ActivityPage() {
         }
       });
       // Sorter loggene etter tid, nyeste først
-      logs.sort((a, b) => b.time.getTime() - a.time.getTime()); 
+      logs.sort((a, b) => b.time.getTime() - a.time.getTime());
       setActivities(logs);
       setVisibleCount(6);
     });
@@ -73,32 +75,47 @@ export default function ActivityPage() {
       <ScrollView contentContainerStyle={styles.activityList}>
         {visibleActivities.map((item, index) => (
           <View key={index} style={styles.activityItem}>
-            <View style={styles.dateRow}>
-              <Text style={styles.date}>
-                {item.time.toLocaleDateString("nb-NO", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "2-digit",
-                })}
-              </Text>
-              <Text style={styles.time}>
-                {item.time.toLocaleTimeString("nb-NO", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
+            <View style={styles.itemRow}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.dateRow}>
+                  <Text style={styles.date}>
+                    {item.time.toLocaleDateString("nb-NO", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
+                  </Text>
+                  <Text style={styles.time}>
+                    {item.time.toLocaleTimeString("nb-NO", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+                <Text style={styles.activityText}>
+                  {item.type === "Innsjekket"
+                    ? `${item.name} ble sjekket inn.`
+                    : `${item.name} ble hentet.`}
+                </Text>
+              </View>
+              <View style={styles.iconContainer}>
+                {item.type === "Innsjekket" ? (
+                  <FontAwesome6
+                    name="house-circle-check"
+                    size={26}
+                    color="#5019cfa0"
+                  />
+                ) : (
+                  <FontAwesome5 name="car-side" size={26} color="#5019cfa0" />
+                )}
+              </View>
             </View>
-            <Text style={styles.activityText}>
-                {item.type === "Innsjekket"
-                  ? `${item.name} ble sjekket inn.`
-                  : `${item.name} ble hentet.`}
-            </Text>
             <View style={styles.divider} />
           </View>
         ))}
 
         {activities.length > visibleCount && (
-          <Pressable 
+          <Pressable
             style={styles.showMoreButton}
             onPress={() => setVisibleCount((prev) => prev + 6)}
           >
@@ -108,7 +125,8 @@ export default function ActivityPage() {
 
         {activities.length === 0 && (
           <Text style={styles.noActivityText}>
-            Ingen aktiviteter å vise. Sjekk inn eller hent barnet ditt for å se aktivitet her.
+            Ingen aktiviteter å vise. Sjekk inn eller hent barnet ditt for å se
+            aktivitet her.
           </Text>
         )}
       </ScrollView>
@@ -120,14 +138,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    paddingHorizontal: 16,
+    paddingHorizontal: 6,
   },
   header: {
     fontSize: 26,
     fontWeight: "700",
     marginTop: 40,
     marginBottom: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
   },
   activityList: {
     paddingBottom: 60,
@@ -136,6 +154,10 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 12,
     marginBottom: 12,
+  },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   dateRow: {
     flexDirection: "row",
@@ -161,6 +183,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: 8,
   },
   divider: {
     height: 1,
