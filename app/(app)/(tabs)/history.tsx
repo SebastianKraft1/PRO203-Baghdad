@@ -4,12 +4,14 @@ import { Child } from '@/types/child';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+// Fiks type til types mappen
 type HistoryLog = {
   type: string;
   name: string;
   time: Date;
 };
 
+// Endre navn til HistoryPage
 export default function ActivityPage() {
   const [activities, setActivities] = useState<HistoryLog[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);

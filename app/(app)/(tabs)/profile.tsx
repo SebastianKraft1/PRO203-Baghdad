@@ -1,7 +1,7 @@
 import {
-    checkInChild,
-    checkOutChild,
-    listenToChildren,
+  checkInChild,
+  checkOutChild,
+  listenToChildren,
 } from "@/api/childrenApi";
 import { uploadImageToFirebase } from "@/api/imageApi";
 import { getUserProfile, updateUserProfileImage } from "@/api/userApi";
@@ -10,17 +10,18 @@ import SelectImageModal from "@/components/SelectImageModal";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { UserData } from "@/types/user";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Button,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Button,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 export default function ProfilePage() {
@@ -89,99 +90,104 @@ export default function ProfilePage() {
 
   return (
     <View style={{ flex: 1 }}>
-    <ScrollView 
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.container}>
-      <Pressable
-        onPress={() => setIsImageModalVisible(true)}
-        style={{ alignItems: "center" }}
-      >
-        <Image
-          source={
-            user.profileImage
-              ? { uri: user.profileImage }
-              : require("../../../assets/images/placeholder-profile.png")
-          }
-          style={styles.profileImage}
-        />
-        <Text style={styles.editImgText}>Rediger bilde</Text>
-      </Pressable>
+      <View style={styles.headerRow}>
+        <Pressable onPress={() => router.push("../calendar")}>
+          <FontAwesome name="calendar" size={24} color="#5B2C6F" />
+        </Pressable>
+      </View>
+      <ScrollView 
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.container}>
+        <Pressable
+          onPress={() => setIsImageModalVisible(true)}
+          style={{ alignItems: "center" }}
+        >
+          <Image
+            source={
+              user.profileImage
+                ? { uri: user.profileImage }
+                : require("../../../assets/images/placeholder-profile.png")
+            }
+            style={styles.profileImage}
+          />
+          <Text style={styles.editImgText}>Rediger bilde</Text>
+        </Pressable>
 
-      <Text style={styles.name}>{user.name}</Text>
-      <Text style={styles.role}>{user.role}</Text>
+        <Text style={styles.name}>{user.name}</Text>
+        <Text style={styles.role}>{user.role}</Text>
 
-      <View style={styles.childrenSection}>
-        <View style={styles.childrenHeader}>
-          <Text style={styles.sectionTitle}>Registrerte barn</Text>
+        <View style={styles.childrenSection}>
+          <View style={styles.childrenHeader}>
+            <Text style={styles.sectionTitle}>Registrerte barn</Text>
+            <Button
+              title="Registrer barn +"
+              onPress={() => setIsChildModalVisible(true)}
+            />
+          </View>
+
+        {children.map((child) => (
+          <View key={child.id} style={{ marginBottom: 12 }}>
+            <View style={styles.childCard}>
+              <View style={styles.childInfo}>
+                <Text style={styles.childName}>{child.name}</Text>
+                <Text>Alder: {child.age}</Text>
+                <Text>Avdeling: {child.department}</Text>
+              {child.allergies && <Text>Allergier: {child.allergies}</Text>}
+            <Text
+              style={[
+                styles.childStatus,
+                child.isCheckedIn ? styles.checkedIn : styles.checkedOut,
+              ]}
+            >
+            {child.status}
+            </Text>
+          </View>
+
           <Button
-            title="Registrer barn +"
-            onPress={() => setIsChildModalVisible(true)}
+            title={child.isCheckedIn ? "Sjekk ut" : "Sjekk inn"}
+            onPress={() => {
+              if (child.isCheckedIn) {
+                checkOutChild(userId!, child.id);
+              } else {
+                checkInChild(userId!, child.id);
+              }
+            }}
           />
         </View>
+        <View style={styles.receiptWrapper}>
+          <Button
+            title="Kvittering"
+            onPress={() =>
+              router.navigate({
+                pathname: "/receipt-detail/[childId]",
+                params: { childId: String(child.id) },
+              })
+            }
+          />
+        </View>
+      </View>
+    ))}
 
-       {children.map((child) => (
-        <View key={child.id} style={{ marginBottom: 12 }}>
-          <View style={styles.childCard}>
-            <View style={styles.childInfo}>
-              <Text style={styles.childName}>{child.name}</Text>
-              <Text>Alder: {child.age}</Text>
-              <Text>Avdeling: {child.department}</Text>
-            {child.allergies && <Text>Allergier: {child.allergies}</Text>}
-          <Text
-            style={[
-              styles.childStatus,
-              child.isCheckedIn ? styles.checkedIn : styles.checkedOut,
-            ]}
-           >
-          {child.status}
-          </Text>
         </View>
 
-        <Button
-          title={child.isCheckedIn ? "Sjekk ut" : "Sjekk inn"}
-          onPress={() => {
-            if (child.isCheckedIn) {
-              checkOutChild(userId!, child.id);
-            } else {
-              checkInChild(userId!, child.id);
-            }
-          }}
-        />
-      </View>
-      <View style={styles.receiptWrapper}>
-        <Button
-          title="Kvittering"
-          onPress={() =>
-            router.navigate({
-              pathname: "/receipt-detail/[childId]",
-              params: { childId: String(child.id) },
-            })
-          }
-        />
-      </View>
-    </View>
-  ))}
+        {/* Modal for å velge bilde */}
+        <Modal visible={isImageModalVisible} animationType="slide">
+          <SelectImageModal
+            closeModal={() => setIsImageModalVisible(false)}
+            setImage={handleImageSelected}
+          />
+        </Modal>
 
-      </View>
-
-      {/* Modal for å velge bilde */}
-      <Modal visible={isImageModalVisible} animationType="slide">
-        <SelectImageModal
-          closeModal={() => setIsImageModalVisible(false)}
-          setImage={handleImageSelected}
-        />
-      </Modal>
-
-      {/* Modal for å registrere barn */}
-      {userId && (
-        <RegisterChildModal
-          isVisible={isChildModalVisible}
-          setIsVisible={setIsChildModalVisible}
-          userId={userId}
-          confirmChildAdded={handleChildAdded}
-        />
-      )}
-    </ScrollView>
+        {/* Modal for å registrere barn */}
+        {userId && (
+          <RegisterChildModal
+            isVisible={isChildModalVisible}
+            setIsVisible={setIsChildModalVisible}
+            userId={userId}
+            confirmChildAdded={handleChildAdded}
+          />
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -196,6 +202,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 50,
     fontSize: 18,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    padding: 16,
   },
   profileImage: {
     width: 120,
