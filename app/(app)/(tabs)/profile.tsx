@@ -11,6 +11,8 @@ import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { UserData } from "@/types/user";
 import { Ionicons } from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Image,
@@ -75,6 +77,11 @@ export default function ProfilePage() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.headerRow}>
+          <Pressable onPress={() => router.push("../calendar")}>
+            <FontAwesome name="calendar" size={30} color="#5B2C6F" />
+          </Pressable>
+        </View>
         {/* Header med profilbilde */}
         <View style={styles.header}>
           <Pressable
@@ -196,7 +203,7 @@ export default function ProfilePage() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 40,
     paddingHorizontal: 20,
   },
@@ -213,6 +220,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     marginBottom: 32,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    padding: 18,
+    paddingTop: 65,
   },
   profileImageContainer: {
     position: "relative",

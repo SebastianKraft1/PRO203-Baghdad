@@ -1,6 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Feather from '@expo/vector-icons/Feather';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 
 export default function TabBar() {
@@ -14,6 +14,7 @@ export default function TabBar() {
         name="profile"
         options={{
           title: "Profil",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
             <AntDesign name="user" size={24} color={color} />
@@ -38,7 +39,7 @@ export default function TabBar() {
           headerShown: false,
           tabBarIcon: ({ color }) => (
             // Ikon hentet fra https://icons.expo.fyi/Index, en ikondatabase for expo. Prøv dere fram med egne ikoner ved å følge lenken!
-            <Feather name="settings" size={24} color={color}  />
+            <Feather name="settings" size={24} color={color} />
           ),
         }}
       />
