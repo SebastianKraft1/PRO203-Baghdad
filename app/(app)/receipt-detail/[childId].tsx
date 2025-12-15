@@ -1,3 +1,9 @@
+/* 
+  Side for å vise detaljert "kvittering" for inn/utsjekk av ett barn.
+  Den brukes ikke aktivt i appen, men er et eksempel på hvordan man kan hente
+  og vise data med historikk.
+*/
+
 import { listenToChildren } from "@/api/childrenApi";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
@@ -17,6 +23,7 @@ export default function ReceiptDetailPage() {
   const [child, setChild] = useState<ChildWithTimes | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Lytter til barns data fra Firestore
   useEffect(() => {
     if (!userId || !childId) return;
 
@@ -29,6 +36,7 @@ export default function ReceiptDetailPage() {
     return () => unsubscribe();
   }, [userId, childId]);
 
+  // Hjelpefunksjon for å formatere tid
   const formatTime = (isoString?: string) => {
     if (!isoString) return "Ikke registrert";
 
@@ -44,6 +52,7 @@ export default function ReceiptDetailPage() {
     });
   };
 
+  // Loading-state
   if (loading) {
     return (
       <View style={styles.center}>
@@ -53,6 +62,7 @@ export default function ReceiptDetailPage() {
     );
   }
 
+  // Hvis barnet ikke finnes
   if (!child) {
     return (
       <View style={styles.center}>
@@ -61,6 +71,7 @@ export default function ReceiptDetailPage() {
     );
   }
 
+  // Visning av kvitteringen
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: "Kvittering" }} />

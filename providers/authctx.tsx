@@ -1,13 +1,19 @@
+/*
+  Provider og hook for autentisering i SafeDrop.
+  Håndterer innlogging, utlogging, opprettelse av bruker og brukerens "session".
+  Gir komponentene enkel tilgang til auth-data.
+*/
+
 import { createUser, setUserDisplayName, signIn, signOut } from "@/api/authApi";
 import { auth } from "@/firebaseConfig";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged, User } from "firebase/auth";
 import {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
 type AuthContextType = {
@@ -21,6 +27,8 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Hook for å hente auth-data fra konteksten
+// Kaster feil hvis den brukes uten AuthSessionProvider
 export function useAuthSession() {
   const value = useContext(AuthContext);
   if (!value) {
@@ -32,6 +40,12 @@ export function useAuthSession() {
   return value;
 }
 
+/*
+  Hovedprovideren for auth
+  Setter opp state for bruker, session og loading-status
+  Lytter til Firebase state endringer og,
+  styrer navigering til hovedside når session lastes inn
+*/
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [userSession, setUserSession] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +53,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
   const router = useRouter();
 
+  // Lytter til endringer i Firebase auth state
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setIsLoading(true);
@@ -53,6 +68,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Naviger til hovdside når session er lastet inn
   useEffect(() => {
     if (isLoading) return;
     router.replace("/");

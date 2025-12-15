@@ -1,3 +1,8 @@
+/* 
+  Denne filen er ansvarlig for all Firestore-kommunikasjon knyttet til barn
+  Det vil si opprettelse, henting, oppdatering og inn/utsjekk.
+*/
+
 import { db } from "@/firebaseConfig";
 import {
   addDoc,
@@ -10,6 +15,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
+// Oppretter et nytt barn under en spesifikk bruker
 export async function createChild(userId: string, child: any) {
   try {
     const ref = collection(db, "users", userId, "children");
@@ -28,6 +34,7 @@ export async function createChild(userId: string, child: any) {
   }
 }
 
+// Henter alle barn som er registret på brukeren
 export async function getChildren(userId: string) {
   try {
     const ref = collection(db, "users", userId, "children");
@@ -46,6 +53,7 @@ export async function getChildren(userId: string) {
   }
 }
 
+// Oppdaterer informasjonen om et barn
 export async function updateChild(userId: string, childId: string, data: any) {
   try {
     const ref = doc(db, "users", userId, "children", childId);
@@ -56,6 +64,7 @@ export async function updateChild(userId: string, childId: string, data: any) {
   }
 }
 
+// Sletter et barn fra databasen
 export async function deleteChild(userId: string, childId: string) {
   try {
     const ref = doc(db, "users", userId, "children", childId);
@@ -66,13 +75,14 @@ export async function deleteChild(userId: string, childId: string) {
   }
 }
 
+// Sjekker et barn inn og oppdaterer historikken
 export async function checkInChild(userId: string, childId: string) {
   try {
     const now = new Date().toISOString();
 
     const ref = doc(db, "users", userId, "children", childId);
     const snapshot = await getDoc(ref);
-    if(!snapshot.exists()) return;
+    if (!snapshot.exists()) return;
 
     const data = snapshot.data();
     const updatedHistory = [...(data.checkInHistory ?? []), now];
@@ -89,13 +99,14 @@ export async function checkInChild(userId: string, childId: string) {
   }
 }
 
+// Sjekker et barn ut og oppdaterer historikken
 export async function checkOutChild(userId: string, childId: string) {
   try {
     const now = new Date().toISOString();
 
     const ref = doc(db, "users", userId, "children", childId);
     const snapshot = await getDoc(ref);
-    if(!snapshot.exists()) return;
+    if (!snapshot.exists()) return;
 
     const data = snapshot.data();
     const updatedHistory = [...(data.checkInHistory ?? []), now];
@@ -112,6 +123,7 @@ export async function checkOutChild(userId: string, childId: string) {
   }
 }
 
+// Lytter på endringer i sanntid for barn som er tilknyttet en bruker
 export function listenToChildren(userId: string, callback: Function) {
   try {
     const ref = collection(db, "users", userId, "children");

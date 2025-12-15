@@ -1,7 +1,13 @@
+/*
+  Denne filen har ansvaret for å opprette, hente og oppdatere brukerprofil
+  i Firestore (users-collection)
+*/
+
 import { db } from "@/firebaseConfig";
 import { UserData } from "@/types/user";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
+// Lager en ny brukerprofil i Firestore når man registrerer seg første gang
 export async function createUserProfile(userId: string, user: UserData) {
   try {
     await setDoc(doc(db, "users", userId), user);
@@ -11,6 +17,7 @@ export async function createUserProfile(userId: string, user: UserData) {
   }
 }
 
+// Henter brukerprofilen for innlogget bruker
 export async function getUserProfile(userId: string) {
   try {
     const querySnapshot = await getDoc(doc(db, "users", userId));
@@ -27,6 +34,7 @@ export async function getUserProfile(userId: string) {
   }
 }
 
+// Oppdaterer bio-feltet i brukerprofilen
 export async function editUserBio(userId: string, bio: string) {
   try {
     await updateDoc(doc(db, "users", userId), {
@@ -38,6 +46,7 @@ export async function editUserBio(userId: string, bio: string) {
   }
 }
 
+// Oppdaterer profilbilde
 export async function updateUserProfileImage(
   userId: string,
   profileImage: string,
@@ -54,6 +63,7 @@ export async function updateUserProfileImage(
   }
 }
 
+// Oppdaterer antall registrerte barn for bruker
 export async function updateRegisteredChildren(userId: string, count: number) {
   try {
     await updateDoc(doc(db, "users", userId), {

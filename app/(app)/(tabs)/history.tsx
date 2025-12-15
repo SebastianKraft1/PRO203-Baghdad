@@ -1,3 +1,9 @@
+/* 
+  Side for å vise historikk over barns innsjekk / utsjekk.
+  Henter data fra Firestore via listenToChildren, sorterer dem kronologisk
+  og viser en liste.
+*/
+
 import { listenToChildren } from "@/api/childrenApi";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
@@ -6,7 +12,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-// Fiks type til types mappen
+// Type for historikk-logg
 type HistoryLog = {
   type: string;
   name: string;
@@ -18,6 +24,7 @@ export default function HistoryPage() {
   const [visibleCount, setVisibleCount] = useState(6);
   const userId = auth.currentUser?.uid;
 
+  // Lytter til data i sanntid
   useEffect(() => {
     if (!userId) return;
 
@@ -25,7 +32,7 @@ export default function HistoryPage() {
       const logs: HistoryLog[] = [];
 
       children.forEach((child) => {
-        // Alle innsjekk
+        // Legger til Alle innsjekk
         if (child.checkInHistory && child.checkInHistory.length > 0) {
           child.checkInHistory.forEach((checkInTime) => {
             logs.push({
@@ -41,7 +48,7 @@ export default function HistoryPage() {
             time: new Date(child.checkInTime),
           });
         }
-
+        // Legger til alle utsjekk
         if (child.checkOutHistory && child.checkOutHistory.length > 0) {
           child.checkOutHistory.forEach((checkOutTime) => {
             logs.push({
@@ -70,13 +77,15 @@ export default function HistoryPage() {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <Text style={styles.header}>Historikk</Text>
-
       <ScrollView contentContainerStyle={styles.activityList}>
         {visibleActivities.map((item, index) => (
           <View key={index} style={styles.activityItem}>
             <View style={styles.itemRow}>
               <View style={{ flex: 1 }}>
+
+                {/* Dato og klokkeslett */}
                 <View style={styles.dateRow}>
                   <Text style={styles.date}>
                     {item.time.toLocaleDateString("nb-NO", {
@@ -92,12 +101,14 @@ export default function HistoryPage() {
                     })}
                   </Text>
                 </View>
+                {/* Tskstbeskrivelse */}
                 <Text style={styles.activityText}>
                   {item.type === "Innsjekket"
                     ? `${item.name} ble sjekket inn.`
                     : `${item.name} ble hentet.`}
                 </Text>
               </View>
+              {/* Ikon som viser type */}
               <View style={styles.iconContainer}>
                 {item.type === "Innsjekket" ? (
                   <FontAwesome6
@@ -114,6 +125,7 @@ export default function HistoryPage() {
           </View>
         ))}
 
+        {/* Knapp for å vise flere elementer */}
         {activities.length > visibleCount && (
           <Pressable
             style={styles.showMoreButton}
@@ -122,7 +134,7 @@ export default function HistoryPage() {
             <Text style={styles.showMoreText}>Vis mer</Text>
           </Pressable>
         )}
-
+        {/* Melding hvis det ikke her vært noe aktivitet */}
         {activities.length === 0 && (
           <Text style={styles.noActivityText}>
             Ingen aktiviteter å vise. Sjekk inn eller hent barnet ditt for å se

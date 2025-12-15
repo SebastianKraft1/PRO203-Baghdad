@@ -1,3 +1,8 @@
+/*
+  Profilside for brukeren. Viser profilbilde, navn, rolle, statistikk og liste over barn.
+  Lar brukeren sjekke inn/ut barn, oppdatere profilbilde, og registrere nye barn via modal.
+*/
+
 import {
   checkInChild,
   checkOutChild,
@@ -32,6 +37,7 @@ export default function ProfilePage() {
   const [isChildModalVisible, setIsChildModalVisible] = useState(false);
   const userId = auth.currentUser?.uid;
 
+  // Hent brukerprofil ved oppstart
   useEffect(() => {
     if (!userId) return;
     getUserProfile(userId).then((data) => {
@@ -39,6 +45,7 @@ export default function ProfilePage() {
     });
   }, [userId]);
 
+  // Lytter til data fra Firestore i sanntid
   useEffect(() => {
     if (!userId) return;
     const unsubscribe = listenToChildren(userId, (childrenData: any[]) => {
@@ -47,6 +54,7 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, [userId]);
 
+  // Håndterer valgt bilde fra modalen
   const handleImageSelected = async (imageUri: string) => {
     if (!userId || !user) return;
     const uploadedImage = await uploadImageToFirebase(imageUri);
@@ -63,6 +71,7 @@ export default function ProfilePage() {
 
   const checkedInCount = children.filter((c) => c.isCheckedIn).length;
 
+  // Loading state hvis brukerdata ikke er lastet
   if (!user) {
     return (
       <View style={styles.loadingContainer}>
@@ -77,6 +86,7 @@ export default function ProfilePage() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        {/* Kalenderknapp */}
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.push("../calendar")}>
             <FontAwesome name="calendar" size={30} color="#5B2C6F" />
@@ -105,7 +115,7 @@ export default function ProfilePage() {
           <Text style={styles.role}>{user.role}</Text>
         </View>
 
-        {/* Stats */}
+        {/* Statistikk */}
         <View style={styles.statsContainer}>
           <View style={[styles.statCard, styles.activeCard]}>
             <Text style={styles.statNumber}>{checkedInCount}</Text>
@@ -123,7 +133,7 @@ export default function ProfilePage() {
           </View>
         </View>
 
-        {/* Mine barn */}
+        {/* Liste over barn */}
         <View style={styles.childrenSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mine barn</Text>
@@ -135,6 +145,7 @@ export default function ProfilePage() {
           {children.map((child) => (
             <View key={child.id} style={styles.childCard}>
               <View style={styles.childInfo}>
+                {/* Avatar og detaljer */}
                 <View style={styles.childAvatar}>
                   <Text style={styles.avatarText}>
                     {child.name.charAt(0).toUpperCase()}
@@ -154,6 +165,7 @@ export default function ProfilePage() {
                 </View>
               </View>
 
+              {/* Innsjekk / Utsjekk knapp */}
               <TouchableOpacity
                 style={[
                   styles.checkButton,
@@ -181,7 +193,7 @@ export default function ProfilePage() {
         </View>
       </ScrollView>
 
-      {/* Modals */}
+      {/* Modal for profilbilde */}
       <Modal visible={isImageModalVisible} animationType="slide">
         <SelectImageModal
           closeModal={() => setIsImageModalVisible(false)}
@@ -189,6 +201,7 @@ export default function ProfilePage() {
         />
       </Modal>
 
+      {/* Modal for registrering av barn */}
       {userId && (
         <RegisterChildModal
           isVisible={isChildModalVisible}

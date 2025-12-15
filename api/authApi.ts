@@ -1,3 +1,8 @@
+/* 
+  Denne filen inneholder autentiseringslogikk inkludert innlogging,
+  registrering, tredjepartsinnlogging og kontohåndtering via Firebase Auth.
+*/
+
 import { auth } from "@/firebaseConfig";
 import {
   GoogleSignin,
@@ -13,11 +18,12 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
   updateProfile,
-  User
+  User,
 } from "firebase/auth";
-import { createUserProfile } from "./userApi";
 import { Alert } from "react-native";
+import { createUserProfile } from "./userApi";
 
+// Innlogging med e-post og passord
 export async function signIn(email: string, password: string) {
   await signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -26,10 +32,12 @@ export async function signIn(email: string, password: string) {
     .catch((error) => console.log("Oops, kunne ikke logge inn", error));
 }
 
+// Logger ut nåværende bruker
 export async function signOut() {
   await auth.signOut();
 }
 
+// Oppretter ny bruker i Firebase Auth med brukerprofil i Firestore
 export async function createUser(
   email: string,
   password: string,
@@ -44,6 +52,7 @@ export async function createUser(
       password
     );
 
+    // Setter brukernavn i Auth hvis det er oppgitt
     const user = userCredentials.user;
     if (userName) {
       await updateProfile(user, {
@@ -51,6 +60,7 @@ export async function createUser(
       });
     }
 
+    // Oppretter brukerprofil i Firestore
     await createUserProfile(user.uid, {
       id: user.uid,
       name: userName || email.split("@")[0],
@@ -69,6 +79,7 @@ export async function createUser(
   }
 }
 
+// Oppdaterer brukernavn for innlogget bruker
 export async function setUserDisplayName(user: User, displayName: string) {
   try {
     await updateProfile(user, {
@@ -79,6 +90,7 @@ export async function setUserDisplayName(user: User, displayName: string) {
   }
 }
 
+// Innlogging via Google
 export async function signInWithGoogle() {
   try {
     await GoogleSignin.hasPlayServices();
@@ -98,6 +110,7 @@ export async function signInWithGoogle() {
   }
 }
 
+// Innlogging via Apple ID
 export async function signInWithApple() {
   try {
     const appleCredential = await AppleAuthentication.signInAsync({
@@ -124,6 +137,7 @@ export async function signInWithApple() {
   }
 }
 
+// Sletter brukerkontoen til brukeren som er innlogget
 export async function deleteAccount() {
   const currentUser = auth.currentUser;
   if (!currentUser) {
@@ -138,7 +152,7 @@ export async function deleteAccount() {
   } catch (error: any) {
     console.error("Error deleting user account:", error);
 
-    if (error?.code === 'auth/requires-recent-login') {
+    if (error?.code === "auth/requires-recent-login") {
       Alert.alert(
         "Handling krever ny pålogging",
         "For å slette kontoen din, vennligst logg inn på nytt og prøv igjen."
@@ -152,13 +166,14 @@ export async function deleteAccount() {
   }
 }
 
+// Endrer passord for brukeren som er innlogget
 export async function changePassword(newPassword: string) {
   const currentUser = auth.currentUser;
   if (!currentUser) {
     console.warn("No user is currently signed in.");
     return;
   }
-  
+
   try {
     await updatePassword(currentUser, newPassword);
     console.log("Password updated successfully.");
