@@ -1,3 +1,8 @@
+/*
+  Viser app-innstillinger som språk, mørk modus, kontohåndtering,
+  samt navigasjon til Personvern/GDPR og redigering av brukerprofil.
+*/
+
 import * as authApi from "@/api/authApi";
 import EditProfileModal from "@/components/EditProfileModal";
 import { useAuthSession } from "@/providers/authctx";
@@ -16,9 +21,6 @@ import {
   View,
 } from "react-native";
 
-// SettingsPage
-// Viser app-innstillinger som språk, mørk modus, kontohåndtering,
-// samt navigasjon til Personvern/GDPR og redigering av brukerprofil.
 export default function SettingsPage() {
   const { signOut } = useAuthSession();
 

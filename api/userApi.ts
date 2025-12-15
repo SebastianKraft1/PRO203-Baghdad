@@ -34,6 +34,7 @@ export async function getUserProfile(userId: string) {
   }
 }
 
+// Oppdaterer brukerprofil
 export async function updateUserProfile(userId: string, fields: any) {
   try {
     await updateDoc(doc(db, "users", userId), fields);
