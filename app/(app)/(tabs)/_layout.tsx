@@ -8,6 +8,9 @@ export default function TabBar() {
     <Tabs
       screenOptions={{
         title: "index",
+        tabBarActiveTintColor: "#7B5FFF",
+        tabBarInactiveTintColor: "gray",
+        tabBarStyle: { backgroundColor: "white" },
       }}
     >
       <Tabs.Screen
