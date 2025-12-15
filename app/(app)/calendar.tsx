@@ -1,3 +1,7 @@
+/* 
+    Viser kalender med helligdager, arrangementer og kommende hendelser
+*/
+
 import { CalendarEvent, CalendarHoliday } from "@/types/calendar";
 import Feather from '@expo/vector-icons/Feather';
 import { router } from "expo-router";
@@ -5,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 
+// Konfiguerer norsk locale
 LocaleConfig.locales["nb"] = {
     monthNames: ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"],
     monthNamesShort: ["jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des"],
@@ -15,13 +20,18 @@ LocaleConfig.locales["nb"] = {
 
 LocaleConfig.defaultLocale = "nb";
 
-// Eksempler på hendelser. ansatte vil kunne legge til
+/*
+    Eksempler på hendelser. ansatte vil kunne legge til.
+    Rollebasert tilgang er ikke implementert i løsningen vår, 
+    Men dette er et eksempel på hvordan det ville blitt brukt
+*/
 const events: CalendarEvent[] = [
     { date: "2025-12-18", title: "Foreldremøte" },
     { date: "2025-12-19", title: "Julaavslutning", description: "Alle familiemedlemmer er velkommen" },
 ];
 
 export default function CalendarPage() {
+    // State for valgt dato, helligdager, innlastning og info om valgt dag
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [holidays, setHolidays] = useState<CalendarHoliday[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +40,7 @@ export default function CalendarPage() {
 
     const today = new Date().toISOString().slice(0, 10);
 
+    // Henter offentlige helligdager for gjeldende år
     useEffect(() => {
         const year = new Date().getFullYear();
 
@@ -53,6 +64,7 @@ export default function CalendarPage() {
         fetchHolidays();
     }, []);
 
+    // Marker dagens dato, helligdager og arrangementer
     const markedDates: { [date: string]: any } = {};
 
     markedDates[today] = { 
@@ -85,6 +97,7 @@ export default function CalendarPage() {
         };
     }
 
+    // Kombinerer helligdager og arrangementer til kommende hendelser
     const upcomingEvents = (() => {
         const todayString = today;
 
@@ -169,7 +182,7 @@ export default function CalendarPage() {
                     }}
                 />
             </View>
-
+            {/* Info om valgt dato */}
             {selectedInfoTitle && selectedInfoLines && (
                 <View style={styles.infoBox}>
                     <Text style={styles.infoTitle}>{selectedInfoTitle}</Text>
@@ -180,7 +193,7 @@ export default function CalendarPage() {
         
             )}
 
-            {/* Kommende hendelser */}
+            {/* Liste med kommende hendelser */}
             <View style={styles.eventsContainer}>
                 <Text style={styles.eventsHeader}>Kommende hendelser</Text>
                 {upcomingEvents.length === 0 ? (

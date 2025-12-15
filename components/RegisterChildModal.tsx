@@ -1,3 +1,9 @@
+/* 
+  Modal for å registrere et nytt barn til brukeren.
+  Brukeren kan fylle inn navn, alder, allergier og avdeling,
+  og sende dataen til Firestore via API.
+*/
+
 import { createChild } from "@/api/childrenApi";
 import { useState } from "react";
 import {
@@ -10,6 +16,7 @@ import {
   View,
 } from "react-native";
 
+// Props for modal
 export type RegisterChildModalProps = {
   isVisible: boolean;
   setIsVisible: (visible: boolean) => void;
@@ -17,6 +24,7 @@ export type RegisterChildModalProps = {
   confirmChildAdded: VoidFunction;
 };
 
+// Håndterer registrering av nytt barn
 export default function RegisterChildModal({
   isVisible,
   setIsVisible,
@@ -35,6 +43,7 @@ export default function RegisterChildModal({
     try {
       setIsLoading(true);
 
+      // Kaller API for å opprette barn i Firestore
       await createChild(userId, {
         name,
         age: Number(age),
@@ -42,11 +51,13 @@ export default function RegisterChildModal({
         department,
       });
 
+      // Resetter inputfeltet etter registrering
       setName("");
       setAge("");
       setAllergies("");
       setDepartment("");
 
+      // Callback for å oppdatere foreldre komponenten
       confirmChildAdded();
       setIsVisible(false);
     } catch (e) {
@@ -66,6 +77,7 @@ export default function RegisterChildModal({
             <ActivityIndicator size="large" color="#5B2C6F" />
           ) : (
             <>
+              {/* Input-felt for barnets data */}
               <TextInput
                 value={name}
                 onChangeText={setName}
@@ -92,6 +104,7 @@ export default function RegisterChildModal({
                 style={styles.textInput}
               />
 
+              {/* Knapper for legg til / lukk */}
               <View style={styles.buttonContainer}>
                 <Pressable
                   style={[styles.button, styles.primaryButton]}

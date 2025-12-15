@@ -1,3 +1,9 @@
+/*
+  Root layout for appen som håndterer autentisering og navigasjon. 
+  Viser loading state, sender uautentiserte brukere til innlogging,
+  og setter opp hovednavigasjonen.
+*/
+
 import { Redirect, Stack } from "expo-router";
 import "react-native-reanimated";
 
@@ -7,6 +13,7 @@ import { Text, View } from "react-native";
 export default function RootLayout() {
   const { user, isLoading } = useAuthSession();
 
+  // Viser loading state mens vi venter på auth info
   if (isLoading) {
     return (
       <View>
@@ -15,10 +22,10 @@ export default function RootLayout() {
     );
   }
 
+  // Hvis brukeren ikke er logget inn, send til innlogging
   if (!user) {
     return <Redirect href={"/authentication"} />;
   }
-
 
   return (
     <Stack>
@@ -29,7 +36,10 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen name="+not-found" />
-      <Stack.Screen name="calendar" options={{ title: "Kalender", headerShown: false }} />
+      <Stack.Screen
+        name="calendar"
+        options={{ title: "Kalender", headerShown: false }}
+      />
     </Stack>
   );
 }

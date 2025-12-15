@@ -1,3 +1,9 @@
+/*
+  Modal for å velge eller ta et bilde. 
+  Brukeren kan enten åpne kamerarullen eller ta bilde med kameraet.
+  Bildet sendes tilbake til foreldre-komponenten via setImage og modalen lukkes etterpå.
+*/
+
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { useRef } from "react";
@@ -15,10 +21,12 @@ export default function SelectImageModal({
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
 
+  // Hvis permission-data ikke er lastet ennå
   if (!permission) {
     return <View />;
   }
 
+  // Hvis brukeren ikke har gitt tillatelse
   if (!permission.granted) {
     return (
       <View style={styles.container}>
@@ -28,6 +36,7 @@ export default function SelectImageModal({
     );
   }
 
+  // Velg bilde fra kamerarull
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -42,6 +51,7 @@ export default function SelectImageModal({
     }
   }
 
+  // Ta bilde med kamera
   async function captureImage() {
     if (cameraRef.current) {
       const image = await cameraRef.current.takePictureAsync();
@@ -52,16 +62,22 @@ export default function SelectImageModal({
     }
   }
 
+  // Kamera og knapper
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing="back" ref={cameraRef} />
+      {/* Avbryt */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => closeModal()}>
           <Text style={styles.text}>Avbryt</Text>
         </TouchableOpacity>
+
+        {/* Ta bilde */}
         <TouchableOpacity style={styles.button} onPress={() => captureImage()}>
           <Text style={styles.text}>Ta bilde</Text>
         </TouchableOpacity>
+
+        {/* Velg fra kamerarull */}
         <TouchableOpacity style={styles.button} onPress={() => pickImage()}>
           <Text style={styles.text}>Velg...</Text>
         </TouchableOpacity>
@@ -97,6 +113,5 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 24,
     fontWeight: "bold",
-    //color: "white",
   },
 });

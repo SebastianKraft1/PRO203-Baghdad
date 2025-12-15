@@ -1,3 +1,8 @@
+/* 
+  Side som viser GDPR og personvern for SafeDrop.
+  Alle lenkene kan klikkes på og åpnes i nettleser. 
+*/
+
 import {
   Linking,
   Pressable,
@@ -79,8 +84,8 @@ export default function PrivacyPage() {
           nasjonale retningslinjer.
         </Text>
 
+        {/* Kildeliste med klikkbare lenker */}
         <Text style={styles.subHeader}>Kildeliste</Text>
-
         <Pressable
           onPress={() =>
             Linking.openURL("https://eur-lex.europa.eu/eli/reg/2016/679/oj")

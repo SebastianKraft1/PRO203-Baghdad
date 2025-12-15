@@ -1,3 +1,8 @@
+/*
+  Grensesnitt for en bruker i SafeDrop.
+  Brukes til profil og visning.
+*/
+
 export interface UserData {
   id: string;
   name: string;
@@ -7,4 +12,5 @@ export interface UserData {
   profileImagePath: string;
   role: "Foresatt" | "Ansatt";
   registeredChildren?: number;
+  phone?: string;
 }

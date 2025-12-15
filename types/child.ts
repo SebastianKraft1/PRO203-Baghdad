@@ -1,3 +1,8 @@
+/*
+  Grensesnitt for barn som er registret i SafeDrop.
+  Brukes til visning, innsjekk/utsjekk og historikk.
+*/
+
 export interface Child {
   id: string;
   name: string;

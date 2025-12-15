@@ -1,6 +1,12 @@
+/*
+  Håndterer opplastning av bilder til Firebase Storage
+  og returnerer både nadlastnings-URL og lagringssti.
+*/
+
 import { getStorageRef } from "@/firebaseConfig";
 import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
+// Laster opp et bilde til Firebase Storage basert på lokal URI
 export async function uploadImageToFirebase(uri: string) {
   const fetchResponse = await fetch(uri);
   const blob = await fetchResponse.blob();

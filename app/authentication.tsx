@@ -1,6 +1,10 @@
+/*
+  Håndterer innlogging og registering av brukere
+*/
+
 import * as authApi from "@/api/authApi";
 import { useAuthSession } from "@/providers/authctx";
-import AntDesign from '@expo/vector-icons/AntDesign';
+import AntDesign from "@expo/vector-icons/AntDesign";
 import React, { useState } from "react";
 import {
   Image,
@@ -16,10 +20,10 @@ import {
 } from "react-native";
 
 const Authentication = () => {
+  // State for tekstfelt og om vi er i innlogging / registrering
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [isSignUp, setIsSignUp] = useState(false);
 
   const { signIn, createUser } = useAuthSession();
@@ -36,13 +40,18 @@ const Authentication = () => {
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.mainContainer}>
+          {/* Logo */}
+          <Image
+            source={require("../assets/images/safedrop-logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-          <Image source={require("../assets/images/safedrop-logo.png")} style={styles.logo} resizeMode="contain"  />
-
+          {/* Kort med input-felt */}
           <View style={styles.cardContainer}>
             {isSignUp && (
               <View style={styles.textFieldContainer}>
-                <Text style={{marginBottom: 8}}>Brukernavn</Text>
+                <Text style={{ marginBottom: 8 }}>Brukernavn</Text>
                 <TextInput
                   value={userName}
                   onChangeText={setUserName}
@@ -51,8 +60,9 @@ const Authentication = () => {
                 />
               </View>
             )}
+            {/* E-post */}
             <View style={styles.textFieldContainer}>
-              <Text style={{marginBottom: 8}}>E-postadresse</Text>
+              <Text style={{ marginBottom: 8 }}>E-postadresse</Text>
               <TextInput
                 value={userEmail}
                 onChangeText={setUserEmail}
@@ -61,8 +71,9 @@ const Authentication = () => {
                 keyboardType="email-address"
               />
             </View>
+            {/* Passord */}
             <View style={styles.textFieldContainer}>
-              <Text style={{marginBottom: 8}}>Passord</Text>
+              <Text style={{ marginBottom: 8 }}>Passord</Text>
               <TextInput
                 value={password}
                 secureTextEntry={true}
@@ -71,6 +82,7 @@ const Authentication = () => {
                 placeholder="Passord"
               />
             </View>
+            {/* Knapp for innlogging / registrering */}
             <View style={styles.buttonContainer}>
               <Pressable
                 style={styles.primaryButton}
@@ -92,6 +104,7 @@ const Authentication = () => {
                 </Text>
               </Pressable>
             </View>
+            {/* Bytte mellom innlogging og registrering */}
             <Pressable
               style={{
                 paddingTop: 24,
@@ -109,41 +122,52 @@ const Authentication = () => {
               </Text>
             </Pressable>
           </View>
-          
+
           {/* Google og Apple innlogging */}
           <View style={styles.socialButtonsContainer}>
-                {/* Google sign-in */}
+            {/* Google sign-in */}
+            <Pressable
+              style={[
+                styles.socialButton,
+                styles.googleButton,
+                styles.iconButton,
+              ]}
+              onPress={async () => {
+                await authApi.signInWithGoogle();
+              }}
+            >
+              <AntDesign
+                name="google"
+                size={24}
+                color="black"
+                style={styles.icon}
+              />
+              <Text style={styles.socialButtonText}>Logg inn med Google</Text>
+            </Pressable>
+            {/* Apple innlogging ( kun for iOS ) */}
+            {Platform.OS === "ios" && (
               <Pressable
-                style={[styles.socialButton, styles.googleButton, styles.iconButton]}
+                style={[
+                  styles.socialButton,
+                  styles.appleButton,
+                  styles.iconButton,
+                ]}
                 onPress={async () => {
-                  await authApi.signInWithGoogle();
+                  await authApi.signInWithApple();
                 }}
               >
-                <AntDesign name="google" size={24} color="black" style={styles.icon} />
-                <Text
-                  style={styles.socialButtonText}
-                >
-                  Logg inn med Google
+                <AntDesign
+                  name="apple"
+                  size={24}
+                  color="white"
+                  style={styles.icon}
+                />
+                <Text style={[styles.socialButtonText, { color: "white" }]}>
+                  Logg inn med Apple
                 </Text>
               </Pressable>
-              {/* Apple sign-in */}
-              {Platform.OS === "ios" && (
-                <Pressable
-                  style={[styles.socialButton, styles.appleButton, styles.iconButton]}
-                  onPress={async () => {
-                    await authApi.signInWithApple();
-                  }}
-                >
-                  <AntDesign name="apple" size={24} color="white" style={styles.icon}/>
-                  <Text
-                    style={[styles.socialButtonText, { color: "white" }]}
-                  >
-                    Logg inn med Apple
-                  </Text>
-                </Pressable>
-              )}
+            )}
           </View>
-
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

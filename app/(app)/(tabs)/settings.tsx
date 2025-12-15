@@ -1,10 +1,18 @@
+/*
+  Viser app-innstillinger som språk, mørk modus, kontohåndtering,
+  samt navigasjon til Personvern/GDPR og redigering av brukerprofil.
+*/
+
 import * as authApi from "@/api/authApi";
+import EditProfileModal from "@/components/EditProfileModal";
 import { useAuthSession } from "@/providers/authctx";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
   Image,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -15,9 +23,12 @@ import {
 
 export default function SettingsPage() {
   const { signOut } = useAuthSession();
+
   const [language, setLanguage] = useState<"no" | "en">("no");
   const [darkMode, setDarkMode] = useState(false);
+  const [isEditVisible, setIsEditVisible] = useState(false);
 
+  // Sletter brukerens konto permanent
   const handleDeleteAccount = async () => {
     Alert.alert(
       "Slett konto",
@@ -36,6 +47,7 @@ export default function SettingsPage() {
     );
   };
 
+  // Endrer passord (kun støttet på iOS)
   const handleChangePassword = async () => {
     if (Platform.OS === "ios") {
       Alert.prompt(
@@ -86,7 +98,10 @@ export default function SettingsPage() {
             <Text style={styles.languageLabel}>{currentLanguageLabel}</Text>
           </Pressable>
         </View>
+
         <Text style={styles.subtitle}>Her kan du endre på profilen din</Text>
+
+        {/* Dark mode toggle */}
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Lys modus / Mørk modus</Text>
           <Pressable
@@ -104,6 +119,8 @@ export default function SettingsPage() {
             />
           </Pressable>
         </View>
+
+        {/* Handlinger */}
         <View style={styles.buttonsContainer}>
           <Pressable
             style={styles.settingButton}
@@ -111,6 +128,21 @@ export default function SettingsPage() {
           >
             <Text style={styles.settingButtonText}>Personvern / GDPR</Text>
           </Pressable>
+
+          <Pressable
+            style={styles.settingButton}
+            onPress={() => setIsEditVisible(true)}
+          >
+            <Text style={styles.settingButtonText}>Rediger konto</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.settingButton}
+            onPress={handleChangePassword}
+          >
+            <Text style={styles.settingButtonText}>Endre passord</Text>
+          </Pressable>
+
           <Pressable
             style={[styles.settingButton, styles.dangerButton]}
             onPress={handleDeleteAccount}
@@ -119,20 +151,32 @@ export default function SettingsPage() {
               Slett konto
             </Text>
           </Pressable>
-          <Pressable style={styles.settingButton}>
-            <Text style={styles.settingButtonText}>Endre konto</Text>
-          </Pressable>
-          <Pressable
-            style={styles.settingButton}
-            onPress={handleChangePassword}
-          >
-            <Text style={styles.settingButtonText}>Endre passord</Text>
-          </Pressable>
+
           <Pressable style={styles.settingButton} onPress={handleSignOut}>
             <Text style={styles.settingButtonText}>Logg ut</Text>
           </Pressable>
         </View>
       </ScrollView>
+
+      {/* Rediger profil-modal */}
+      <Modal
+        visible={isEditVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsEditVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Pressable
+              style={styles.closeIcon}
+              onPress={() => setIsEditVisible(false)}
+            >
+              <AntDesign name="close" size={20} color="#111827" />
+            </Pressable>
+            <EditProfileModal onClose={() => setIsEditVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -245,5 +289,24 @@ const styles = StyleSheet.create({
   dangerText: {
     color: "#D9534F",
     fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  modalContent: {
+    width: "100%",
+    maxWidth: 400,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 16,
+  },
+  closeIcon: {
+    alignSelf: "flex-end",
+    padding: 4,
+    marginBottom: 4,
   },
 });
