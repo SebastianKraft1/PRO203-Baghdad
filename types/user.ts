@@ -12,4 +12,5 @@ export interface UserData {
   profileImagePath: string;
   role: "Foresatt" | "Ansatt";
   registeredChildren?: number;
+  phone?: string;
 }

@@ -34,15 +34,12 @@ export async function getUserProfile(userId: string) {
   }
 }
 
-// Oppdaterer bio-feltet i brukerprofilen
-export async function editUserBio(userId: string, bio: string) {
+export async function updateUserProfile(userId: string, fields: any) {
   try {
-    await updateDoc(doc(db, "users", userId), {
-      bio: bio,
-    });
-    console.log("Document written with ID: ", userId);
+    await updateDoc(doc(db, "users", userId), fields);
+    console.log("User profile updated: ", userId, fields);
   } catch (e) {
-    console.log("Error creating user profile", e);
+    console.log("Error updating user profile", e);
   }
 }
 
