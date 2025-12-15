@@ -1,13 +1,15 @@
 import * as authApi from "@/api/authApi";
+import EditProfileModal from "@/components/EditProfileModal";
 import { useAuthSession } from "@/providers/authctx";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from "react";
-import { Alert, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-
+import { Alert, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function SettingsPage() { 
     const { signOut } = useAuthSession();
     const [language, setLanguage] = useState<"no" | "en">("no");
     const [darkMode, setDarkMode] = useState(false);
+    const [isEditVisible, setIsEditVisible] = useState(false);
 
     const handleDeleteAccount = async () => {
         Alert.alert(
@@ -96,8 +98,8 @@ export default function SettingsPage() {
                     <Pressable style={[styles.settingButton, styles.dangerButton]} onPress={handleDeleteAccount}>
                         <Text style={[styles.settingButtonText, styles.dangerText]}>Slett konto</Text>
                     </Pressable>
-                    <Pressable style={styles.settingButton}>
-                        <Text style={styles.settingButtonText}>Endre konto</Text>
+                    <Pressable style={styles.settingButton} onPress={() => setIsEditVisible(true)}>
+                        <Text style={styles.settingButtonText}>Rediger konto</Text>
                     </Pressable>
                     <Pressable style={styles.settingButton} onPress={handleChangePassword}>
                         <Text style={styles.settingButtonText}>Endre passord</Text>
@@ -107,6 +109,24 @@ export default function SettingsPage() {
                     </Pressable>
                 </View>
             </ScrollView>
+            <Modal
+                visible={isEditVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setIsEditVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Pressable
+                            style={styles.closeIcon}
+                            onPress={() => setIsEditVisible(false)}
+                        >
+                            <AntDesign name="close" size={20} color="#111827" />
+                        </Pressable>
+                        <EditProfileModal onClose={() => setIsEditVisible(false)} />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -219,5 +239,24 @@ const styles = StyleSheet.create({
     dangerText: {
         color: "#D9534F",
         fontWeight: "600",
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.35",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 24,
+    },
+    modalContent: {
+        width: "100%",
+        maxWidth: 400,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 16,
+    },
+    closeIcon: {
+        alignSelf: "flex-end",
+        padding: 4,
+        marginBottom: 4,
     },
 });
