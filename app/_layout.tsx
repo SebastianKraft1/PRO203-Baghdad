@@ -5,12 +5,15 @@
 */
 
 import { AuthSessionProvider } from "@/providers/authctx";
+import { ThemeProvider } from "@/providers/themectx";
 import { Slot } from "expo-router";
 
 export default function RootRootLayout() {
   return (
     <AuthSessionProvider>
-      <Slot />
+      <ThemeProvider>
+        <Slot />
+      </ThemeProvider>
     </AuthSessionProvider>
   );
 }

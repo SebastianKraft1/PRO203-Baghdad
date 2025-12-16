@@ -3,19 +3,24 @@
   Bruker expo-router for å lage tab-bar med 3 faner: Profil, Historikk og Instillinger.
 */
 
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 
 export default function TabBar() {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
+
   return (
     <Tabs
       screenOptions={{
         title: "index",
-        tabBarActiveTintColor: "#7B5FFF",
-        tabBarInactiveTintColor: "gray",
-        tabBarStyle: { backgroundColor: "white" },
+        tabBarActiveTintColor: theme.tabIconSelected,
+        tabBarInactiveTintColor: theme.tabIconDefault,
+        tabBarStyle: { backgroundColor: theme.card },
       }}
     >
       {/* Profil-fane */}

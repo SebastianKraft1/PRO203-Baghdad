@@ -2,6 +2,7 @@
     Viser kalender med helligdager, arrangementer og kommende hendelser
 */
 
+import { Colors } from "@/constants/theme";
 import { CalendarEvent, CalendarHoliday } from "@/types/calendar";
 import Feather from '@expo/vector-icons/Feather';
 import { router } from "expo-router";
@@ -175,7 +176,7 @@ export default function CalendarPage() {
                     enableSwipeMonths={true}
                     style={styles.calendar}
                     theme={{
-                        arrowColor: "#7C3AED",
+                        arrowColor: Colors.light.primary,
                         textDayFontWeight: "600",
                         textMonthFontWeight: "700",
                         textDayHeaderFontWeight: "600",
@@ -224,7 +225,7 @@ export default function CalendarPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#E5E7F5",
+        backgroundColor: Colors.light.surfaceSoft,
         paddingTop: 50,
         paddingHorizontal: 16,
     },
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
         padding: 12,
         marginBottom: 12,
         borderWidth: 0.2,
-        borderColor: "gray"
+        borderColor: Colors.light.mutedText,
     },
     infoTitle: {
         fontSize: 16,
@@ -279,10 +280,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "600",
         marginBottom: 12,
+        color: Colors.light.text,
     },
     noEventsText: {
         fontSize: 14,
-        color: "#4B5563",
+        color: Colors.light.mutedText,
     },
     eventItem: {
         fontSize: 16,

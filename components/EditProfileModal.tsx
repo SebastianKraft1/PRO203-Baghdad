@@ -1,5 +1,6 @@
 import { deleteChild, listenToChildren } from "@/api/childrenApi";
 import { getUserProfile, updateUserProfile } from "@/api/userApi";
+import { Colors } from "@/constants/theme";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { UserData } from "@/types/user";
@@ -186,9 +187,9 @@ export default function EditProfileModal({ onClose }: EditProfileModalProps) {
 const styles = StyleSheet.create({
     editCard: {
         width: "100%",
-        backgroundColor: "#F4F4FB",
+        backgroundColor: Colors.light.surface,
         borderRadius: 16,
-        padding: 16,
+        padding: 20,
     },
     editTitle: {
         fontSize: 18,
@@ -197,13 +198,13 @@ const styles = StyleSheet.create({
     },
     input: {
         width: "100%",
-        backgroundColor: "white",
+        backgroundColor: Colors.light.card,
         borderRadius: 999,
         paddingHorizontal: 16,
         paddingVertical: 10,
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Colors.light.border,
     },
     buttonRow: {
         flexDirection: "row",
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 999,
-        backgroundColor: "#E5E7EB",
+        backgroundColor: Colors.light.button,
     },
     cancelText: {
         fontSize: 14,
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 999,
-        backgroundColor: "#6d61bcff",
+        backgroundColor: Colors.light.primaryDark,
     },
     saveText: {
         color: "white",
@@ -238,10 +239,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
         marginBottom: 6,
+        color: Colors.light.text,
     },
     noChildrenText: {
         fontSize: 14,
-        color: "#6B7280",
+        color: Colors.light.mutedText,
     },
     childRow: {
         flexDirection: "row",

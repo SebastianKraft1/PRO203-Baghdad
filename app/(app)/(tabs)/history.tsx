@@ -5,6 +5,7 @@
 */
 
 import { listenToChildren } from "@/api/childrenApi";
+import { Colors } from "@/constants/theme";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -114,10 +115,10 @@ export default function HistoryPage() {
                   <FontAwesome6
                     name="house-circle-check"
                     size={26}
-                    color="#5019cfa0"
+                    color={Colors.light.accent}
                   />
                 ) : (
-                  <FontAwesome5 name="car-side" size={26} color="#5019cfa0" />
+                  <FontAwesome5 name="car-side" size={26} color={Colors.light.accent} />
                 )}
               </View>
             </View>
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 12,
     paddingHorizontal: 14,
+    color: Colors.light.text,
   },
   activityList: {
     paddingBottom: 60,
@@ -209,14 +211,14 @@ const styles = StyleSheet.create({
   noActivityText: {
     textAlign: "center",
     marginTop: 24,
-    color: "#6B7280",
+    color: Colors.light.mutedText,
   },
   showMoreButton: {
     alignSelf: "center",
     padding: 10,
   },
   showMoreText: {
-    color: "#6c97feff",
+    color: Colors.light.primary,
     fontSize: 16,
   },
 });
