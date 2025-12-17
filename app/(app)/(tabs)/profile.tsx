@@ -12,6 +12,7 @@ import { uploadImageToFirebase } from "@/api/imageApi";
 import { getUserProfile, updateUserProfileImage } from "@/api/userApi";
 import RegisterChildModal from "@/components/RegisterChildModal";
 import SelectImageModal from "@/components/SelectImageModal";
+import { Colors } from "@/constants/theme";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import { UserData } from "@/types/user";
@@ -89,7 +90,11 @@ export default function ProfilePage() {
         {/* Kalenderknapp */}
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.push("../calendar")}>
-            <FontAwesome name="calendar" size={30} color="#5B2C6F" />
+            <FontAwesome
+              name="calendar"
+              size={30}
+              color={Colors.light.primary}
+            />
           </Pressable>
         </View>
         {/* Header med profilbilde */}
@@ -138,7 +143,11 @@ export default function ProfilePage() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mine barn</Text>
             <TouchableOpacity onPress={() => setIsChildModalVisible(true)}>
-              <Ionicons name="add-circle" size={28} color="#A569BD" />
+              <Ionicons
+                name="add-circle"
+                size={28}
+                color={Colors.light.accent}
+              />
             </TouchableOpacity>
           </View>
 
@@ -248,7 +257,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: Colors.light.surfaceSoft,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -259,24 +268,24 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: "#A569BD",
+    backgroundColor: Colors.light.accent,
     width: 36,
     height: 36,
     borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: "#F8F9FA",
+    borderColor: Colors.light.background,
   },
   name: {
     fontSize: 26,
     fontWeight: "700",
-    color: "#1A1A1A",
+    color: Colors.light.text,
     marginBottom: 4,
   },
   role: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.light.mutedText,
   },
   statsContainer: {
     flexDirection: "row",
@@ -285,7 +294,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.light.card,
     padding: 18,
     borderRadius: 16,
     alignItems: "center",
@@ -296,7 +305,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   activeCard: {
-    backgroundColor: "#A569BD",
+    backgroundColor: Colors.light.primary,
   },
   statNumber: {
     fontSize: 28,
@@ -333,7 +342,7 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
   },
   childCard: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.light.card,
     padding: 16,
     borderRadius: 16,
     marginBottom: 12,
@@ -351,7 +360,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#E8D5F2",
+    backgroundColor: Colors.light.surfaceSoft,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -359,7 +368,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#A569BD",
+    color: Colors.light.accent,
   },
   childDetails: {
     flex: 1,
@@ -400,10 +409,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   checkIn: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#5DAA8E",
   },
   checkOut: {
-    backgroundColor: "#FF9800",
+    backgroundColor: "#E6A157",
   },
   buttonText: {
     color: "#fff",

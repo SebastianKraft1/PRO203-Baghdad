@@ -5,8 +5,9 @@
 
 import * as authApi from "@/api/authApi";
 import EditProfileModal from "@/components/EditProfileModal";
+import { Colors } from "@/constants/theme";
 import { useAuthSession } from "@/providers/authctx";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { useTheme } from "@/providers/themectx";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -25,8 +26,9 @@ export default function SettingsPage() {
   const { signOut } = useAuthSession();
 
   const [language, setLanguage] = useState<"no" | "en">("no");
-  const [darkMode, setDarkMode] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const darkMode = theme === "dark";
 
   // Sletter brukerens konto permanent
   const handleDeleteAccount = async () => {
@@ -105,7 +107,7 @@ export default function SettingsPage() {
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Lys modus / Mørk modus</Text>
           <Pressable
-            onPress={() => setDarkMode((prev) => !prev)}
+            onPress={toggleTheme}
             style={[
               styles.toggleButton,
               darkMode ? styles.toggleOn : styles.toggleOff,
@@ -166,15 +168,7 @@ export default function SettingsPage() {
         onRequestClose={() => setIsEditVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Pressable
-              style={styles.closeIcon}
-              onPress={() => setIsEditVisible(false)}
-            >
-              <AntDesign name="close" size={20} color="#111827" />
-            </Pressable>
-            <EditProfileModal onClose={() => setIsEditVisible(false)} />
-          </View>
+          <EditProfileModal onClose={() => setIsEditVisible(false)} />
         </View>
       </Modal>
     </View>
@@ -205,6 +199,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
+    color: Colors.light.text,
   },
   languageButton: {
     flexDirection: "row",
@@ -212,7 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: "#E3E4E8",
+    backgroundColor: Colors.light.button,
   },
   languageFlag: {
     fontSize: 16,
@@ -226,6 +221,7 @@ const styles = StyleSheet.create({
     width: "100%",
     fontSize: 14,
     marginBottom: 24,
+    color: Colors.light.mutedText,
   },
   toggleRow: {
     width: "100%",
@@ -236,7 +232,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 999,
-    backgroundColor: "#E3E4E8",
+    backgroundColor: Colors.light.button,
   },
   toggleLabel: {
     fontSize: 16,
@@ -250,7 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   toggleOn: {
-    backgroundColor: "#6d61bcff",
+    backgroundColor: Colors.light.primary,
   },
   toggleOff: {
     backgroundColor: "#a1a1a1",
@@ -277,7 +273,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 999,
-    backgroundColor: "#E3E4E8",
+    backgroundColor: Colors.light.button,
   },
   settingButtonText: {
     fontSize: 16,
@@ -287,7 +283,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5E5E5",
   },
   dangerText: {
-    color: "#D9534F",
+    color: Colors.light.danger,
     fontWeight: "600",
   },
   modalOverlay: {
@@ -296,17 +292,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 24,
-  },
-  modalContent: {
-    width: "100%",
-    maxWidth: 400,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 16,
-  },
-  closeIcon: {
-    alignSelf: "flex-end",
-    padding: 4,
-    marginBottom: 4,
   },
 });

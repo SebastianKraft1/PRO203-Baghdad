@@ -5,6 +5,7 @@
 */
 
 import { createChild } from "@/api/childrenApi";
+import { Colors } from "@/constants/theme";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "90%",
-    backgroundColor: "#EDE6FF",
+    backgroundColor: Colors.light.surface,
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
@@ -151,13 +152,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "600",
     marginBottom: 20,
-    color: "#5B2C6F",
+    color: Colors.light.text,
   },
   textInput: {
     width: "100%",
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.light.card,
     marginBottom: 12,
     fontSize: 16,
   },
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   primaryButton: {
-    backgroundColor: "#5B2C6F",
+    backgroundColor: Colors.light.primary,
     marginRight: 8,
   },
   secondaryButton: {

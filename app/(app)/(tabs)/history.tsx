@@ -5,6 +5,7 @@
 */
 
 import { listenToChildren } from "@/api/childrenApi";
+import { Colors } from "@/constants/theme";
 import { auth } from "@/firebaseConfig";
 import { Child } from "@/types/child";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -84,7 +85,6 @@ export default function HistoryPage() {
           <View key={index} style={styles.activityItem}>
             <View style={styles.itemRow}>
               <View style={{ flex: 1 }}>
-
                 {/* Dato og klokkeslett */}
                 <View style={styles.dateRow}>
                   <Text style={styles.date}>
@@ -114,10 +114,14 @@ export default function HistoryPage() {
                   <FontAwesome6
                     name="house-circle-check"
                     size={26}
-                    color="#5019cfa0"
+                    color={Colors.light.accent}
                   />
                 ) : (
-                  <FontAwesome5 name="car-side" size={26} color="#5019cfa0" />
+                  <FontAwesome5
+                    name="car-side"
+                    size={26}
+                    color={Colors.light.accent}
+                  />
                 )}
               </View>
             </View>
@@ -158,6 +162,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 12,
     paddingHorizontal: 14,
+    color: Colors.light.text,
   },
   activityList: {
     paddingBottom: 60,
@@ -178,14 +183,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   date: {
-    backgroundColor: "#e9e8e8ff",
+    backgroundColor: Colors.light.surfaceSoft,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 14,
     fontSize: 18,
   },
   time: {
-    backgroundColor: "#e9e8e8ff",
+    backgroundColor: Colors.light.surfaceSoft,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 14,
@@ -203,20 +208,20 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#d6d3d3ff",
+    backgroundColor: Colors.light.border,
     marginTop: 10,
   },
   noActivityText: {
     textAlign: "center",
     marginTop: 24,
-    color: "#6B7280",
+    color: Colors.light.mutedText,
   },
   showMoreButton: {
     alignSelf: "center",
     padding: 10,
   },
   showMoreText: {
-    color: "#6c97feff",
+    color: Colors.light.primary,
     fontSize: 16,
   },
 });
