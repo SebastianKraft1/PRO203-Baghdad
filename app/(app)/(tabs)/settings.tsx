@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     width: "100%",
     fontSize: 14,
     marginBottom: 24,
-    color: Colors.light.mutedText
+    color: Colors.light.mutedText,
   },
   toggleRow: {
     width: "100%",
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   toggleOn: {
-    backgroundColor: Colors.light.primaryDark,
+    backgroundColor: Colors.light.primary,
   },
   toggleOff: {
     backgroundColor: "#a1a1a1",

@@ -71,14 +71,14 @@ export default function CalendarPage() {
     markedDates[today] = { 
         ...(markedDates[today] || {}),
         marked: true,
-        dotColor: "#A855F7",
+        dotColor: Colors.light.primary,
     };
 
     holidays.forEach(holiday => {
         markedDates[holiday.date] = {
             ...(markedDates[holiday.date] || {}),
             marked: true,
-            dotColor: "#C4B5FD",
+            dotColor: Colors.light.accent,
         };
     });
 
@@ -86,7 +86,7 @@ export default function CalendarPage() {
         markedDates[event.date] = {
             ...(markedDates[event.date] || {}),
             marked: true,
-            dotColor: "#7C3AED",
+            dotColor: Colors.light.primary,
         };
     });
 
@@ -94,7 +94,7 @@ export default function CalendarPage() {
         markedDates[selectedDate] = {
             ...(markedDates[selectedDate] || {}),
             selected: true,
-            selectedColor: "#7C3AED",
+            selectedColor: Colors.light.primary,
         };
     }
 

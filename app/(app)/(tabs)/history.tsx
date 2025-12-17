@@ -85,7 +85,6 @@ export default function HistoryPage() {
           <View key={index} style={styles.activityItem}>
             <View style={styles.itemRow}>
               <View style={{ flex: 1 }}>
-
                 {/* Dato og klokkeslett */}
                 <View style={styles.dateRow}>
                   <Text style={styles.date}>
@@ -118,7 +117,11 @@ export default function HistoryPage() {
                     color={Colors.light.accent}
                   />
                 ) : (
-                  <FontAwesome5 name="car-side" size={26} color={Colors.light.accent} />
+                  <FontAwesome5
+                    name="car-side"
+                    size={26}
+                    color={Colors.light.accent}
+                  />
                 )}
               </View>
             </View>
@@ -180,14 +183,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   date: {
-    backgroundColor: "#e9e8e8ff",
+    backgroundColor: Colors.light.surfaceSoft,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 14,
     fontSize: 18,
   },
   time: {
-    backgroundColor: "#e9e8e8ff",
+    backgroundColor: Colors.light.surfaceSoft,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 14,
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#d6d3d3ff",
+    backgroundColor: Colors.light.border,
     marginTop: 10,
   },
   noActivityText: {

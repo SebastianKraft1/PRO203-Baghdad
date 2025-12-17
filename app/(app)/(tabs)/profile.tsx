@@ -90,7 +90,11 @@ export default function ProfilePage() {
         {/* Kalenderknapp */}
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.push("../calendar")}>
-            <FontAwesome name="calendar" size={30} color={Colors.light.primaryDark} />
+            <FontAwesome
+              name="calendar"
+              size={30}
+              color={Colors.light.primary}
+            />
           </Pressable>
         </View>
         {/* Header med profilbilde */}
@@ -139,7 +143,11 @@ export default function ProfilePage() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mine barn</Text>
             <TouchableOpacity onPress={() => setIsChildModalVisible(true)}>
-              <Ionicons name="add-circle" size={28} color="#A569BD" />
+              <Ionicons
+                name="add-circle"
+                size={28}
+                color={Colors.light.accent}
+              />
             </TouchableOpacity>
           </View>
 
@@ -297,7 +305,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   activeCard: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: Colors.light.primary,
   },
   statNumber: {
     fontSize: 28,
@@ -401,10 +409,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   checkIn: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#5DAA8E",
   },
   checkOut: {
-    backgroundColor: "#FF9800",
+    backgroundColor: "#E6A157",
   },
   buttonText: {
     color: "#fff",

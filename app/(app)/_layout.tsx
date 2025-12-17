@@ -40,6 +40,10 @@ export default function RootLayout() {
         name="calendar"
         options={{ title: "Kalender", headerShown: false }}
       />
+      <Stack.Screen
+        name="privacy"
+        options={{ title: "Personvern", headerShown: false }}
+      />
     </Stack>
   );
 }
